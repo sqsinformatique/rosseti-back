@@ -39,6 +39,26 @@ CREATE TABLE IF NOT EXISTS production.acts (
     deleted_at timestamp with time zone
 );
 
+CREATE TABLE IF NOT EXISTS production.orders (
+    id serial PRIMARY KEY,
+    object_id INTEGER NOT NULL,
+    staff_id INTEGER NOT NULL,
+    meta jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    deleted_at timestamp with time zone
+);
+
+CREATE TABLE IF NOT EXISTS production.objects (
+    id serial PRIMARY KEY,
+    object_address INTEGER NOT NULL,
+    object_type character varying(255),
+    meta jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    deleted_at timestamp with time zone
+);
+
 -- +goose Down
 DROP TABLE production.users;
 DROP TABLE production.profiles;

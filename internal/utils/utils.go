@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/rand"
+	"errors"
 	"math/big"
 	"strings"
 )
@@ -44,4 +45,24 @@ func RuneSequence(l int, allowedRunes []rune) (seq []rune, err error) {
 	}
 
 	return seq, nil
+}
+
+var (
+	ErrNormilizeEmail = errors.New("failed normilize email")
+)
+
+func NormalizeEmail(email string) (string, error) {
+	// all_lowercase
+	normEmail := strings.ToLower(email)
+
+	// validate email
+	strs := strings.Split(normEmail, "@")
+	if len(strs) < 2 {
+		return "", ErrNormilizeEmail
+	}
+
+	user := strs[0]
+	domain := strs[1]
+
+	return user + "@" + domain, nil
 }

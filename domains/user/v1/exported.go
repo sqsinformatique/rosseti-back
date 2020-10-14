@@ -30,7 +30,12 @@ func NewUserV1(ctx *context.Context, orm *orm.ORM) (*UserV1, error) {
 	u.publicV1 = ctx.GetHTTPGroup(httpsrv.PublicSrv, httpsrv.V1)
 	u.db = ctx.GetDatabase()
 
-	u.publicV1.GET("/user", u.userGetHandler)
+	u.publicV1.POST("/user", u.userPostHandler)
+	u.publicV1.GET("/users/:id", u.userGetHandler)
+	u.publicV1.PUT("/users/:id", u.UserPutHandler)
+	u.publicV1.PUT("/credentials/:id", u.CredsPutHandler)
+	u.publicV1.POST("/credentials", u.CredsPostHandler)
+	u.publicV1.DELETE("/users/:id", u.UserDeleteHandler)
 
 	return u, nil
 }

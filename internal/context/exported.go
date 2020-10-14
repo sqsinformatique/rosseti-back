@@ -6,11 +6,13 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/sqsinformatique/rosseti-back/internal/cfg"
 	"github.com/sqsinformatique/rosseti-back/internal/logger"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Context struct {
 	Log         zerolog.Logger
 	DB          *sqlx.DB
+	MongoDB     *mongo.Client
 	Config      *cfg.AppCfg
 	HTTPServers map[string]*echo.Echo
 	HTTPGroups  map[string]*echo.Group
@@ -36,8 +38,16 @@ func (ctx *Context) RegisterDatabase(db *sqlx.DB) {
 	ctx.DB = db
 }
 
+func (ctx *Context) RegisterMongoDB(db *mongo.Client) {
+	ctx.MongoDB = db
+}
+
 func (ctx *Context) GetDatabase() *sqlx.DB {
 	return ctx.DB
+}
+
+func (ctx *Context) GetMongoDB() *mongo.Client {
+	return ctx.MongoDB
 }
 
 func (ctx *Context) RegisterHTTPServer(name string, srv *echo.Echo) {

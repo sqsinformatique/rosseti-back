@@ -7,6 +7,8 @@ import (
 
 	// other
 
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )
 
@@ -47,6 +49,21 @@ func InitializeLogger(parent *zerolog.Logger, emptyStruct interface{}) (log zero
 	}
 
 	log.Info().Msg("Initializing...")
+
+	return log
+}
+
+func HandlerLogger(parent *zerolog.Logger, ec echo.Context) (log zerolog.Logger) {
+	requestID := ec.Request().Header.Get("x-request-id")
+	if requestID == "" {
+		newUUID, err := uuid.NewUUID()
+		if err != nil {
+			parent.Error().Err(err).Msg("Failed to generate new requestID")
+			return *parent
+		}
+		requestID = strings.ReplaceAll(newUUID.String(), "-", "")
+	}
+	log = parent.With().Str("requestID", requestID).Logger()
 
 	return log
 }

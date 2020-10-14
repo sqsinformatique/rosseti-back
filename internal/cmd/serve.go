@@ -67,7 +67,7 @@ func serveHandler(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create ProfileV1")
 	}
-	_, err = actv1.NewActV1(ctx, ProfileV1, ORM)
+	_, err = actv1.NewActV1(ctx, config, ProfileV1, ORM)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create ActV1")
 	}

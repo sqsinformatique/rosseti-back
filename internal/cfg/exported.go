@@ -9,8 +9,15 @@ import (
 )
 
 type AppCfg struct {
+	Mongo struct {
+		DSN        string `envconfig:"default=mongodb://localhost:27017"`
+		ImageDB    string `envconfig:"default=images"`
+		TemplateDB string `envconfig:"default=templates"`
+		ActsDB     string `envconfig:"default=acts"`
+	}
+
 	Database struct {
-		DSN                   string `envconfig:"default=postgres://postgres:secret@postgres:5432/gifts"`
+		DSN                   string `envconfig:"default=postgres://postgres:secret@postgres:5432/rosseti"`
 		Params                string `envconfig:"default=connect_timeout=10&sslmode=disable"`
 		MaxIdleConnections    int    `envconfig:"default=5"`
 		MaxOpenedConnections  int    `envconfig:"default=10"`
