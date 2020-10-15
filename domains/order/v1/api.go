@@ -1,4 +1,4 @@
-package profilev1
+package orderv1
 
 import (
 	"io/ioutil"
@@ -11,14 +11,14 @@ import (
 	"github.com/sqsinformatique/rosseti-back/models"
 )
 
-func (o ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
+func (o OrderV1) OrderPostHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	var profile models.Profile
-	err = ec.Bind(&profile)
+	var order models.Order
+	err = ec.Bind(&order)
 	if err != nil {
-		hndlLog.Err(err).Msgf("CREATE USER FAILED %+v", &profile)
+		hndlLog.Err(err).Msgf("CREATE USER FAILED %+v", &order)
 
 		return ec.JSON(
 			http.StatusBadRequest,
@@ -26,9 +26,9 @@ func (o ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
 		)
 	}
 
-	profileData, err := o.CreateProfile(&profile)
+	orderData, err := o.CreateOrder(&order)
 	if err != nil {
-		hndlLog.Err(err).Msgf("CREATE ORDER FAILED %+v", &profile)
+		hndlLog.Err(err).Msgf("CREATE ORDER FAILED %+v", &order)
 
 		return ec.JSON(
 			http.StatusConflict,
@@ -38,15 +38,15 @@ func (o ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		OrderDataResult{Body: orderData},
 	)
 }
 
-func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
+func (o *OrderV1) OrderGetHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	profileID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	orderID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -56,9 +56,9 @@ func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
 		)
 	}
 
-	profileData, err := o.GetProfileByID(profileID)
+	orderData, err := o.GetOrderByID(orderID)
 	if err != nil {
-		hndlLog.Err(err).Msgf("NOT FOUND, id %d", profileID)
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", orderID)
 
 		return ec.JSON(
 			http.StatusNotFound,
@@ -68,15 +68,15 @@ func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		OrderDataResult{Body: orderData},
 	)
 }
 
-func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
+func (o *OrderV1) OrderPutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	profileID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	orderID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -93,7 +93,7 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 		ec.Request().Body.Close()
 
 		if err != nil {
-			hndlLog.Err(err).Msgf("ORDER DATA NOT UPDATED, id %d", profileID)
+			hndlLog.Err(err).Msgf("ORDER DATA NOT UPDATED, id %d", orderID)
 
 			return ec.JSON(
 				http.StatusBadRequest,
@@ -102,9 +102,9 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 		}
 	}
 
-	profileData, err := o.UpdateProfileByID(profileID, &bodyBytes)
+	orderData, err := o.UpdateOrderByID(orderID, &bodyBytes)
 	if err != nil {
-		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", profileID, string(bodyBytes))
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", orderID, string(bodyBytes))
 
 		return ec.JSON(
 			http.StatusConflict,
@@ -114,11 +114,11 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		OrderDataResult{Body: orderData},
 	)
 }
 
-func (o *ProfileV1) ProfileDeleteHandler(ec echo.Context) (err error) {
+func (o *OrderV1) OrderDeleteHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
@@ -134,9 +134,9 @@ func (o *ProfileV1) ProfileDeleteHandler(ec echo.Context) (err error) {
 
 	hard := ec.QueryParam("hard")
 	if hard == "true" {
-		err = o.HardDeleteProfileByID(userID)
+		err = o.HardDeleteOrderByID(userID)
 	} else {
-		err = o.SoftDeleteProfileByID(userID)
+		err = o.SoftDeleteOrderByID(userID)
 	}
 
 	if err != nil {

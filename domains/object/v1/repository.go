@@ -1,42 +1,34 @@
-package profilev1
+package objectv1
 
 import (
 	"encoding/json"
 	"time"
 
 	jsonpatch "github.com/evanphx/json-patch"
-	"github.com/sqsinformatique/rosseti-back/internal/crypto"
 	"github.com/sqsinformatique/rosseti-back/internal/db"
 	"github.com/sqsinformatique/rosseti-back/models"
 )
 
-func (o *ProfileV1) CreateProfile(request *models.Profile) (*models.Profile, error) {
+func (o *ObjectV1) CreateObject(request *models.Object) (*models.Object, error) {
 
 	request.CreateTimestamp()
 
-	sign, err := crypto.GenerateSign()
+	result, err := o.orm.InsertInto("objects", request)
 	if err != nil {
 		return nil, err
 	}
 
-	request.PrivateKey, request.PublicKey = crypto.MarshalSign(sign)
-
-	result, err := o.orm.InsertInto("profiles", request)
-	if err != nil {
-		return nil, err
-	}
-
-	return result.(*models.Profile), nil
+	return result.(*models.Object), nil
 }
 
-func (o *ProfileV1) GetProfileByID(id int64) (data *models.Profile, err error) {
-	data = &models.Profile{}
+func (o *ObjectV1) GetObjectByID(id int64) (data *models.Object, err error) {
+	data = &models.Object{}
 
 	if o.db == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	err = o.db.Get(data, "select * from production.profiles where id=$1", id)
+	err = o.db.Get(data, "select * from production.users where id=$1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +38,7 @@ func (o *ProfileV1) GetProfileByID(id int64) (data *models.Profile, err error) {
 	return
 }
 
-func mergeProfileData(oldData *models.Profile, patch *[]byte) (newData *models.Profile, err error) {
+func mergeObjectData(oldData *models.Object, patch *[]byte) (newData *models.Object, err error) {
 	id := oldData.ID
 
 	original, err := json.Marshal(oldData)
@@ -73,13 +65,13 @@ func mergeProfileData(oldData *models.Profile, patch *[]byte) (newData *models.P
 	return newData, nil
 }
 
-func (u *ProfileV1) UpdateProfileByID(id int64, patch *[]byte) (writeData *models.Profile, err error) {
-	data, err := u.GetProfileByID(id)
+func (u *ObjectV1) UpdateObjectByID(id int64, patch *[]byte) (writeData *models.Object, err error) {
+	data, err := u.GetObjectByID(id)
 	if err != nil {
 		return
 	}
 
-	writeData, err = mergeProfileData(data, patch)
+	writeData, err = mergeObjectData(data, patch)
 	if err != nil {
 		return
 	}
@@ -88,7 +80,7 @@ func (u *ProfileV1) UpdateProfileByID(id int64, patch *[]byte) (writeData *model
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	_, err = u.orm.Update("profiles", writeData)
+	_, err = u.orm.Update("objects", writeData)
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +88,8 @@ func (u *ProfileV1) UpdateProfileByID(id int64, patch *[]byte) (writeData *model
 	return writeData, err
 }
 
-func (u *ProfileV1) SoftDeleteProfileByID(id int64) (err error) {
-	data, err := u.GetProfileByID(id)
+func (u *ObjectV1) SoftDeleteObjectByID(id int64) (err error) {
+	data, err := u.GetObjectByID(id)
 	if err != nil {
 		return
 	}
@@ -115,17 +107,17 @@ func (u *ProfileV1) SoftDeleteProfileByID(id int64) (err error) {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = u.orm.Update("profiles", data)
+	_, err = u.orm.Update("objects", data)
 
 	return
 }
 
-func (u *ProfileV1) HardDeleteProfileByID(id int64) (err error) {
+func (u *ObjectV1) HardDeleteObjectByID(id int64) (err error) {
 	if u.db == nil {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = u.db.Exec(u.db.Rebind("DELETE FROM production.profiles WHERE id=$1"), id)
+	_, err = u.db.Exec(u.db.Rebind("DELETE FROM production.objects WHERE id=$1"), id)
 
 	if err != nil {
 		return err

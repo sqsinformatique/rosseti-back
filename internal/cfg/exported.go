@@ -32,13 +32,11 @@ type AppCfg struct {
 	}
 
 	PublicHTTP struct {
-		WaitForSeconds int    `envconfig:"default=10"`
-		Listen         string `envconfig:"default=0.0.0.0:9000"`
+		Listen string `envconfig:"default=0.0.0.0:9000"`
 	}
 
 	PrivateHTTP struct {
-		WaitForSeconds int    `envconfig:"default=10"`
-		Listen         string `envconfig:"default=0.0.0.0:9100"`
+		Listen string `envconfig:"default=0.0.0.0:9100"`
 	}
 
 	Logger struct {

@@ -1,6 +1,13 @@
 version: "3.3"
 
 services:
+  modgodb:
+    image: mongo:3.6.20-xenial
+    ports:
+      - "27017:27017"
+    env_file:
+      - variables.env
+
   postgres:
     image: postgres:12.3-alpine
     ports:

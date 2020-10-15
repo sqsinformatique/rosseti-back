@@ -31,17 +31,20 @@ func NewActV1(ctx *context.Context, config *cfg.AppCfg, profilev1 *profilev1.Pro
 		return nil, errors.New("empty context or config or profilev1 client or orm client")
 	}
 
-	p := &ActV1{}
-	p.log = ctx.GetPackageLogger(empty{})
-	p.publicV1 = ctx.GetHTTPGroup(httpsrv.PublicSrv, httpsrv.V1)
-	p.profilev1 = profilev1
-	p.cfg = config
-	p.db = ctx.GetDatabase()
-	p.mongodb = ctx.GetMongoDB()
+	a := &ActV1{}
+	a.log = ctx.GetPackageLogger(empty{})
+	a.publicV1 = ctx.GetHTTPGroup(httpsrv.PublicSrv, httpsrv.V1)
+	a.profilev1 = profilev1
+	a.cfg = config
+	a.db = ctx.GetDatabase()
+	a.mongodb = ctx.GetMongoDB()
 
-	p.publicV1.GET("/act", p.actGetHandler)
-	p.publicV1.POST("/act", p.actPostHandler)
-	p.publicV1.POST("/act/:actid/images", p.actPostImagesHandler)
+	a.publicV1.GET("/acts/:actid", a.actGetHandler)
+	a.publicV1.POST("/acts", a.actPostHandler)
+	a.publicV1.PUT("/acts/:actid", a.ActPutHandler)
+	a.publicV1.POST("/acts/:actid/images", a.actPostImagesHandler)
+	a.publicV1.GET("/acts/:actid/images/:id", a.actGetImageHandler)
+	a.publicV1.DELETE("/acts/:actid", a.ActDeleteHandler)
 
-	return p, nil
+	return a, nil
 }

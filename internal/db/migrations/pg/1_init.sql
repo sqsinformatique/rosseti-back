@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS production.orders (
 
 CREATE TABLE IF NOT EXISTS production.objects (
     id serial PRIMARY KEY,
-    object_address INTEGER NOT NULL,
+    object_address character varying(255),
     object_type character varying(255),
     meta jsonb,
     created_at timestamp with time zone NOT NULL DEFAULT now(),

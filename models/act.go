@@ -9,8 +9,9 @@ type Act struct {
 	UserID   int  `json:"user_id" db:"user_id" bson:"user_id"`
 	Finished bool `json:"finished" db:"finished" bson:"finished"`
 	// Field for document body
-	Body types.NullMeta `json:"body" bson:"body"`
-	Meta types.NullMeta `json:"meta" db:"meta" bson:"meta"`
+	Body      map[string]interface{} `json:"body" bson:"body"`
+	Signature string                 `json:"sign" bson:"sign"`
+	Meta      types.NullMeta         `json:"meta" db:"meta" bson:"meta"`
 	Timestamp
 }
 

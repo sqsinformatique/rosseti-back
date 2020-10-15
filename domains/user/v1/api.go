@@ -69,6 +69,7 @@ func (u *UserV1) userPostHandler(ec echo.Context) (err error) {
 		UserDataResult{Body: userData},
 	)
 }
+
 func (u *UserV1) userGetHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&u.log, ec)

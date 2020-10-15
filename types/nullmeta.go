@@ -11,7 +11,7 @@ import (
 // it can be used as a scan destination
 type NullMeta struct {
 	Map   map[string]interface{}
-	Valid bool // Valid is true if Time is not NULL
+	Valid bool // Valid is true if Map is not NULL
 }
 
 // Make the NullMeta struct implement the driver.Valuer interface. This method

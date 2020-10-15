@@ -83,3 +83,8 @@ func NotUpdated(err error) ErrorAnsw {
 func InternalServerError(err error) ErrorAnsw {
 	return NewErrorAnsw(http.StatusInternalServerError, "internal server error", err)
 }
+
+// PreconditionFailed return err 409
+func PreconditionFailed(err error) ErrorAnsw {
+	return NewErrorAnsw(http.StatusPreconditionFailed, "precondition failed", err)
+}

@@ -60,7 +60,7 @@ func (u *UserV1) GetUserByID(id int64) (data *models.User, err error) {
 func (u *UserV1) GetUserDataByCreds(c *models.Credentials) (data *models.User, err error) {
 	data = &models.User{}
 
-	if u.db.Conn == nil {
+	if u.db == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
 
@@ -134,12 +134,6 @@ func mergeUserData(oldData *models.User, patch *[]byte) (newData *models.User, e
 	newData.UpdatedAt.Valid = true
 
 	return newData, nil
-}
-
-type updateUser struct {
-	models.User
-	NewPhone string `json:"new_login" db:"new_login"`
-	NewMail  string `json:"new_mail" db:"new_mail"`
 }
 
 func (u *UserV1) UpdateUserByID(id int64, patch *[]byte) (writeData *models.User, err error) {
