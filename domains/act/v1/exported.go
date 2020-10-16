@@ -44,12 +44,12 @@ func NewActV1(ctx *context.Context, profilev1 *profilev1.ProfileV1, orm *orm.ORM
 	a.userV1 = userV1
 	a.orm = orm
 
-	a.publicV1.GET("/acts/:actid", a.userV1.Introspect(a.actGetHandler, types.User))
-	a.publicV1.GET("/acts/user/:id", a.userV1.Introspect(a.actsByUserIDGetHandler, types.User))
-	a.publicV1.POST("/acts", a.userV1.Introspect(a.actPostHandler, types.User))
-	a.publicV1.PUT("/acts/:actid", a.userV1.Introspect(a.ActPutHandler, types.User))
-	a.publicV1.POST("/acts/:actid/images", a.userV1.Introspect(a.actPostImagesHandler, types.User))
-	a.publicV1.GET("/acts/:actid/images/:id", a.userV1.Introspect(a.actGetImageHandler, types.User))
+	a.publicV1.GET("/acts/:actid", a.userV1.Introspect(a.actGetHandler, types.Electrician))
+	a.publicV1.GET("/acts/user/:id", a.userV1.Introspect(a.actsByUserIDGetHandler, types.Electrician))
+	a.publicV1.POST("/acts", a.userV1.Introspect(a.actPostHandler, types.Electrician))
+	a.publicV1.PUT("/acts/:actid", a.userV1.Introspect(a.ActPutHandler, types.Electrician))
+	a.publicV1.POST("/acts/:actid/images", a.userV1.Introspect(a.actPostImagesHandler, types.Electrician))
+	a.publicV1.GET("/acts/:actid/images/:id", a.userV1.Introspect(a.actGetImageHandler, types.Electrician))
 	a.publicV1.DELETE("/acts/:actid", a.userV1.Introspect(a.ActDeleteHandler, types.Master))
 
 	return a, nil

@@ -3,7 +3,6 @@ package actv1
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"errors"
 	"io"
 	"mime/multipart"
@@ -13,8 +12,6 @@ import (
 	"github.com/sqsinformatique/rosseti-back/internal/db"
 	"github.com/sqsinformatique/rosseti-back/models"
 	"github.com/sqsinformatique/rosseti-back/types"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
 
@@ -22,30 +19,20 @@ var (
 	ErrActIsFinished = errors.New("act is finished, can not be updated")
 )
 
-func (a *ActV1) actsDB() *mongo.Collection {
-	mongoconn := *a.mongodb
-	return mongoconn.Database(a.cfg.Mongo.ActsDB).Collection("acts")
-}
-
 func (a *ActV1) CreateAct(request *models.Act) (*models.Act, error) {
 	data := *request
 
 	data.CreateTimestamp()
 
 	if data.Finished {
-		sign, err := a.profilev1.SignDataByID(int64(data.UserID), &data)
+		sign, err := a.profilev1.SignDataByID(int64(data.StaffID), &data)
 		if err != nil {
 			return nil, err
 		}
-		data.Signature = sign
+		data.StaffSign = sign
 	}
 
 	result, err := a.orm.InsertInto("acts", &data)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = a.actsDB().InsertOne(context.Background(), request)
 	if err != nil {
 		return nil, err
 	}
@@ -79,18 +66,11 @@ func (a *ActV1) UpdateActByID(id string, request *models.Act) (*models.Act, erro
 	}
 
 	if data.Finished {
-		sign, err := a.profilev1.SignDataByID(int64(data.UserID), &data)
+		sign, err := a.profilev1.SignDataByID(int64(data.StaffID), &data)
 		if err != nil {
 			return nil, err
 		}
-		data.Signature = sign
-	}
-
-	filter := bson.D{{"id", request.ID}}
-
-	_, err = a.actsDB().UpdateOne(context.Background(), filter, request)
-	if err != nil {
-		return nil, err
+		data.StaffSign = sign
 	}
 
 	return result.(*models.Act), nil
@@ -115,16 +95,6 @@ func (a *ActV1) GetActByID(id string) (data *models.Act, err error) {
 	}
 
 	a.log.Debug().Msgf("acts %+v", data)
-
-	filter := bson.D{{"id", id}}
-
-	var result models.Act
-	err = a.actsDB().FindOne(context.TODO(), filter).Decode(&result)
-	if err != nil {
-		return nil, err
-	}
-
-	data.Body = result.Body
 
 	return data, nil
 }
@@ -151,16 +121,6 @@ func (a *ActV1) GetActsByDate(timeStart, timeEnd types.NullTime) (data *ArrayOfO
 			return nil, err
 		}
 
-		filter := bson.D{{"id", item.ID}}
-
-		var result models.Act
-		err = a.actsDB().FindOne(context.TODO(), filter).Decode(&result)
-		if err != nil {
-			return nil, err
-		}
-
-		item.Body = result.Body
-
 		*data = append(*data, item)
 	}
 
@@ -168,31 +128,7 @@ func (a *ActV1) GetActsByDate(timeStart, timeEnd types.NullTime) (data *ArrayOfO
 }
 
 func (a *ActV1) GetActsByUserID(id string) (data *ArrayOfOActData, err error) {
-	filter := bson.D{{"user_id", id}}
-
 	data = &ArrayOfOActData{}
-
-	cur, err := a.actsDB().Find(context.TODO(), filter)
-	if err != nil {
-		return nil, err
-	}
-
-	for cur.Next(context.TODO()) {
-		// create a value into which the single document can be decoded
-		var elem models.Act
-		err := cur.Decode(&elem)
-		if err != nil {
-			return nil, err
-		}
-
-		*data = append(*data, elem)
-	}
-
-	if err := cur.Err(); err != nil {
-		return nil, err
-	}
-
-	cur.Close(context.TODO())
 
 	return data, nil
 }
@@ -224,20 +160,6 @@ func writeToGridFile(fileName string, file multipart.File, gridFile *gridfs.Uplo
 }
 
 func (a *ActV1) UpdateImagesList(actID, filename string) error {
-	filter := bson.D{{"id", actID}}
-
-	update := bson.D{
-		{"$push", bson.D{
-			{"images", filename},
-		}},
-	}
-
-	updateResult, err := a.actsDB().UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return err
-	}
-
-	a.log.Debug().Msgf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
 	return nil
 }
 
@@ -315,13 +237,6 @@ func (a *ActV1) SoftDeleteActByID(id string) (err error) {
 		return err
 	}
 
-	filter := bson.D{{"id", data.ID}}
-
-	_, err = a.actsDB().UpdateOne(context.Background(), filter, data)
-	if err != nil {
-		return err
-	}
-
 	return
 }
 
@@ -332,14 +247,6 @@ func (a *ActV1) HardDeleteActByID(id string) (err error) {
 	}
 
 	_, err = conn.Exec(conn.Rebind("DELETE FROM production.acts WHERE id=$1"), id)
-	if err != nil {
-		return err
-	}
-
-	filter := bson.D{{"id", id}}
-
-	_, err = a.actsDB().DeleteOne(context.Background(), filter)
-
 	if err != nil {
 		return err
 	}

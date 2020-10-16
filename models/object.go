@@ -7,7 +7,7 @@ import (
 type Object struct {
 	ID      int            `json:"id" db:"id"`
 	Address string         `json:"object_address" db:"object_address"`
-	Type    string         `json:"object_type" db:"object_type"`
+	Name    string         `json:"object_name" db:"object_name"`
 	Meta    types.NullMeta `json:"meta" db:"meta"`
 	Timestamp
 }
@@ -15,7 +15,7 @@ type Object struct {
 func (o *Object) SQLParamsRequest() []string {
 	return []string{
 		"object_address",
-		"object_type",
+		"object_name",
 		"meta",
 		"created_at",
 		"updated_at",

@@ -10,7 +10,6 @@ import (
 	"github.com/sqsinformatique/rosseti-back/internal/db"
 	"github.com/sqsinformatique/rosseti-back/internal/utils"
 	"github.com/sqsinformatique/rosseti-back/models"
-	"github.com/sqsinformatique/rosseti-back/types"
 )
 
 var (
@@ -29,7 +28,7 @@ func (u *UserV1) CreateUser(request *models.NewCredentials) (*models.User, error
 		Hash:  crypto.HashString(request.Password),
 		Email: email,
 		Phone: request.Phone,
-		Role:  types.User,
+		Role:  request.Role,
 	}
 
 	data.CreateTimestamp()

@@ -30,8 +30,31 @@ CREATE TABLE IF NOT EXISTS production.profiles (
 
 CREATE TABLE IF NOT EXISTS production.acts (
     id serial PRIMARY KEY,
-    user_id INTEGER NOT NULL,
+    staff_id INTEGER NOT NULL,
+    superviser_id INTEGER NOT NULL,
+    object_id INTEGER NOT NULL,
+    review_id INTEGER NOT NULL,
     finished boolean,
+    end_at timestamp with time zone,
+    staff_sign character varying(2048), 
+    superviser_sign character varying(2048),
+    approved boolean,
+    reverted boolean,
+    meta jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    deleted_at timestamp with time zone
+);
+
+
+
+CREATE TABLE IF NOT EXISTS production.acts_details (
+    act_id INTEGER NOT NULL,
+    element_id INTEGER NOT NULL,
+    defects jsonb,
+    category INTEGER,
+    repaired_at timestamp with time zone,
+    images jsonb,
     meta jsonb,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
@@ -41,7 +64,22 @@ CREATE TABLE IF NOT EXISTS production.acts (
 CREATE TABLE IF NOT EXISTS production.orders (
     id serial PRIMARY KEY,
     object_id INTEGER NOT NULL,
+    tech_tasks jsonb,
+    superviser_id INTEGER NOT NULL,
     staff_id INTEGER NOT NULL,
+    start_at timestamp with time zone,
+    end_at timestamp with time zone,
+    superviser_sign character varying(2048),
+    staff_sign character varying(2048),
+    meta jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    deleted_at timestamp with time zone
+);
+
+CREATE TABLE IF NOT EXISTS production.tech_tasks (
+    id serial PRIMARY KEY,
+    description character varying(2048),
     meta jsonb,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
@@ -50,8 +88,18 @@ CREATE TABLE IF NOT EXISTS production.orders (
 
 CREATE TABLE IF NOT EXISTS production.objects (
     id serial PRIMARY KEY,
-    object_address character varying(255),
-    object_type character varying(255),
+    object_address character varying(2048),
+    object_name character varying(2048),
+    meta jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    deleted_at timestamp with time zone
+);
+
+CREATE TABLE IF NOT EXISTS production.objects_details (
+    object_id INTEGER NOT NULL,
+    element_id INTEGER NOT NULL,
+    element_name character varying(2048),
     meta jsonb,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),

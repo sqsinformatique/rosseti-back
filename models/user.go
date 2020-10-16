@@ -21,6 +21,7 @@ func (u *User) SQLParamsRequest() []string {
 		"user_hash",
 		"user_email",
 		"user_phone",
+		"user_role",
 		"meta",
 		"created_at",
 		"updated_at",

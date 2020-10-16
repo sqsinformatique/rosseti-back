@@ -35,6 +35,26 @@ func (o *OrderV1) GetOrderByID(id int64) (data *models.Order, err error) {
 	}
 
 	o.log.Debug().Msgf("user %+v", data)
+	staff, err := o.profileV1.GetProfileByID(int64(data.StaffID))
+	if err != nil {
+		return nil, err
+	}
+	o.log.Debug().Msgf("staff %+v", staff)
+	data.StaffDes = staff
+
+	superviser, err := o.profileV1.GetProfileByID(int64(data.SuperviserID))
+	if err != nil {
+		return nil, err
+	}
+
+	data.SuperviserDesc = superviser
+
+	object, err := o.objectV1.GetObjectByID(int64(data.ObjectID))
+	if err != nil {
+		return nil, err
+	}
+
+	data.ObjectDesc = object
 
 	return
 }

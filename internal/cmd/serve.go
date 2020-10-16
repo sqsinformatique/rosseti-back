@@ -89,14 +89,14 @@ func serveHandler(cmd *cobra.Command, args []string) {
 		log.Fatal().Err(err).Msg("Failed create ActV1")
 	}
 
-	_, err = orderv1.NewOrderV1(ctx, ORM, UserV1)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed create OrderV1")
-	}
-
-	_, err = objectv1.NewObjectV1(ctx, ORM, UserV1)
+	ObjectV1, err := objectv1.NewObjectV1(ctx, ORM, UserV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create ObjectV1")
+	}
+
+	_, err = orderv1.NewOrderV1(ctx, ORM, UserV1, ObjectV1, ProfileV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create OrderV1")
 	}
 
 	_, err = templatev1.NewTemplateV1(ctx, UserV1)

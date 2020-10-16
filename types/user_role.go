@@ -13,23 +13,19 @@ var (
 type Role int
 
 const (
-	NonActivetedUser Role = iota // default value
-	Guest
-	User
+	RestrictedUser Role = iota // default value
+	Electrician
 	Master
+	Engineer
 	Admin
-	RestrictedUser
-	RecoveringUser
 )
 
 var stringToRole = map[string]Role{
-	"NON_ACTIVATED_USER": NonActivetedUser,
-	"RESTRICTED_USER":    RestrictedUser,
-	"GUEST":              Guest,
-	"USER":               User,
-	"MASTER":             Master,
-	"ADMIN":              Admin,
-	"RECOVERING_USER":    RecoveringUser,
+	"RESTRICTED_USER": RestrictedUser,
+	"ELECTRICIAN":     Electrician,
+	"MASTER":          Master,
+	"ENGINEER":        Engineer,
+	"ADMIN":           Admin,
 }
 
 func (role Role) String() string {
@@ -48,7 +44,7 @@ func (role *Role) UnmarshalJSON(data []byte) error {
 	var roleName string
 
 	if data == nil {
-		*role = NonActivetedUser
+		*role = RestrictedUser
 		return nil
 	}
 
@@ -58,7 +54,7 @@ func (role *Role) UnmarshalJSON(data []byte) error {
 
 	// Check received Role
 	if roleName == "" {
-		*role = NonActivetedUser
+		*role = RestrictedUser
 	} else {
 		r, ok := stringToRole[roleName]
 		if !ok {
@@ -97,7 +93,7 @@ func (role Role) Value() (driver.Value, error) {
 // simply decodes a JSON-encoded value into the struct fields.
 func (role *Role) Scan(value interface{}) error {
 	if value == nil {
-		*role = NonActivetedUser
+		*role = RestrictedUser
 		return nil
 	}
 

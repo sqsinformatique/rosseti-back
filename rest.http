@@ -12,8 +12,9 @@ Accept: application/json
 
 {
 	"user_password": "123456789",
-	"user_email": "test@test.test",
-	"user_phone": "+791699999999"
+	"user_email": "test@test3.test",
+	"user_phone": "+791699999992",
+	"user_role": "MASTER"
 }
 
 ### Get session
@@ -29,16 +30,16 @@ Accept: application/json
 
 ### Get user by id
 GET {{publicURL}}/{{apiV}}/users/1 HTTP/1.1
-Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
 
 ### Create profile
 POST {{publicURL}}/{{apiV}}/profiles HTTP/1.1
 Content-Type: application/json
 Accept: application/json
-Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
 
 {
-	"id": 1,
+	"id": 3,
 	"user_first_name": "Иван",
 	"user_middle_name": "Васильевич",
 	"user_last_name": "Грозный",
@@ -54,38 +55,62 @@ Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvY
 POST {{publicURL}}/{{apiV}}/orders
 Content-Type: application/json
 Accept: application/json
-Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
 
 {
 	"object_id": 1,
-	"staff_id": 1
+	"tech_tasks" : {
+		"task_1":{
+				"task_id": 1,
+				"task_value": "Не требуется"
+			},
+		"task_2": {
+				"task_id": 2,
+				"task_value": "Находится в работе под рабочим напряжением"
+			}
+	},
+	"superviser_id": 2,
+	"staff_id": 3
 }
 
 ### Get order by id
 GET {{publicURL}}/{{apiV}}/orders/1
 Content-Type: application/json
 Accept: application/json
-Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
 
 ### Get orders for user
-GET {{publicURL}}/{{apiV}}/orders/user/1
+GET {{publicURL}}/{{apiV}}/orders/user/3
 Content-Type: application/json
 Accept: application/json
-Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
 
 ### Create object
 POST {{publicURL}}/{{apiV}}/objects
 Content-Type: application/json
 Accept: application/json
-Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
 
 {
 	"object_address": "г. Москва, ул. Василия Петушкова, вл. 3А",
-	"object_type": "PS220/110/10_220/20" 
+	"object_name": "PS220/110/10_220/20" 
 }
 
 ### Get object by id
 GET {{publicURL}}/{{apiV}}/objects/1
 Content-Type: application/json
 Accept: application/json
-Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+### Create acts
+POST {{publicURL}}/{{apiV}}/acts
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+{
+	"staff_id" : 3,
+	"superviser_id": 2,
+	"object_id": 1,
+	"review_id": 1
+}
