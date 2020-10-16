@@ -12,7 +12,12 @@ type TemplateItem struct {
 }
 
 type Template struct {
-	Name string                   `json:"template_name" bson:"template_name"`
-	Body map[string]*TemplateItem `json:"template_body" bson:"template_body"`
+	Name string `json:"template_name" bson:"template_name"`
+	Geo  struct {
+		Lat float64 `json:"geo_lat" bson:"geo_lat"`
+		Lon float64 `json:"geo_lon" bson:"geo_lat"`
+	} `json:"template_geo" bson:"template_geo"`
+	Author string                   `json:"template_author" bson:"template_author"`
+	Body   map[string]*TemplateItem `json:"template_body" bson:"template_body"`
 	Timestamp
 }

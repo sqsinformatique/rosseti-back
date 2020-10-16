@@ -14,11 +14,10 @@ services:
       - "5432:5432"
     env_file:
       - variables.env
-    volumes:
-      - ./postgres-storage/data:/var/lib/postgresql/data
 
   rosseti-back:
     depends_on:
+      - modgodb
       - postgres
     build: ./
     image: sqsinformatique/rosseti-back

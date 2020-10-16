@@ -1,0 +1,91 @@
+@baseURL = http://localhost
+@publicport = 9000
+@adminport = 9100
+@publicURL = {{baseURL}}:{{publicport}}
+@adminURL = {{baseURL}}:{{adminport}}
+@apiV = api/v1
+
+### Create user
+POST {{publicURL}}/{{apiV}}/user HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+	"user_password": "123456789",
+	"user_email": "test@test.test",
+	"user_phone": "+791699999999"
+}
+
+### Get session
+// @name InternalClient
+POST {{publicURL}}/{{apiV}}/auth HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+	"user_password": "123456789",
+	"user_phone": "+791699999999"
+}
+
+### Get user by id
+GET {{publicURL}}/{{apiV}}/users/1 HTTP/1.1
+Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+
+### Create profile
+POST {{publicURL}}/{{apiV}}/profiles HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+
+{
+	"id": 1,
+	"user_first_name": "Иван",
+	"user_middle_name": "Васильевич",
+	"user_last_name": "Грозный",
+	"user_position": "инженер-электрик 1 кат.",
+	"user_company": "ПАО МОЭСК"
+}
+
+### Get profile
+GET {{publicURL}}/{{apiV}}/profiles/1 HTTP/1.1
+Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+
+### Create order
+POST {{publicURL}}/{{apiV}}/orders
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+
+{
+	"object_id": 1,
+	"staff_id": 1
+}
+
+### Get order by id
+GET {{publicURL}}/{{apiV}}/orders/1
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+
+### Get orders for user
+GET {{publicURL}}/{{apiV}}/orders/user/1
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+
+### Create object
+POST {{publicURL}}/{{apiV}}/objects
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
+
+{
+	"object_address": "г. Москва, ул. Василия Петушкова, вл. 3А",
+	"object_type": "PS220/110/10_220/20" 
+}
+
+### Get object by id
+GET {{publicURL}}/{{apiV}}/objects/1
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;

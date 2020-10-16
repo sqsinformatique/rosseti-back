@@ -72,6 +72,36 @@ func (o *OrderV1) OrderGetHandler(ec echo.Context) (err error) {
 	)
 }
 
+func (o *OrderV1) OrdersGetByUserIDHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&o.log, ec)
+
+	userID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	orderData, err := o.GetOrdersByUserID(userID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", userID)
+
+		return ec.JSON(
+			http.StatusNotFound,
+			httpsrv.NotFound(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		OrderDataResult{Body: orderData},
+	)
+}
+
 func (o *OrderV1) OrderPutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)

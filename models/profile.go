@@ -19,11 +19,14 @@ type Profile struct {
 
 func (u *Profile) SQLParamsRequest() []string {
 	return []string{
+		"id",
 		"user_first_name",
 		"user_middle_name",
 		"user_last_name",
 		"user_position",
 		"user_company",
+		"user_private_key",
+		"user_public_key",
 		"meta",
 		"created_at",
 		"updated_at",

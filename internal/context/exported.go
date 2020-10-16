@@ -11,8 +11,8 @@ import (
 
 type Context struct {
 	Log         zerolog.Logger
-	DB          *sqlx.DB
-	MongoDB     *mongo.Client
+	DB          **sqlx.DB
+	MongoDB     **mongo.Client
 	Config      *cfg.AppCfg
 	HTTPServers map[string]*echo.Echo
 	HTTPGroups  map[string]*echo.Group
@@ -34,19 +34,19 @@ func (ctx *Context) GetPackageLogger(emptyStruct interface{}) (log zerolog.Logge
 	return logger.InitializeLogger(&ctx.Log, emptyStruct)
 }
 
-func (ctx *Context) RegisterDatabase(db *sqlx.DB) {
+func (ctx *Context) RegisterDatabase(db **sqlx.DB) {
 	ctx.DB = db
 }
 
-func (ctx *Context) RegisterMongoDB(db *mongo.Client) {
-	ctx.MongoDB = db
+func (ctx *Context) RegisterMongoDB(mongodb **mongo.Client) {
+	ctx.MongoDB = mongodb
 }
 
-func (ctx *Context) GetDatabase() *sqlx.DB {
+func (ctx *Context) GetDatabase() **sqlx.DB {
 	return ctx.DB
 }
 
-func (ctx *Context) GetMongoDB() *mongo.Client {
+func (ctx *Context) GetMongoDB() **mongo.Client {
 	return ctx.MongoDB
 }
 

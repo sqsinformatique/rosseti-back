@@ -15,22 +15,21 @@ import (
 type empty struct{}
 
 type DB struct {
-	log        zerolog.Logger
-	conn       *mongo.Client
-	config     *cfg.AppCfg
-	schemaName string
-	cancel     context.CancelFunc
+	log    zerolog.Logger
+	conn   *mongo.Client
+	config *cfg.AppCfg
+	cancel context.CancelFunc
 }
 
 // Initialize initialize database
-func NewDB(ctx *intctx.Context) (*DB, error) {
+func NewMongoDB(ctx *intctx.Context) (*DB, error) {
 	if ctx == nil || ctx.Config == nil {
 		return nil, errors.New("empty context or config")
 	}
 	db := &DB{}
 	db.config = ctx.Config
 	db.log = ctx.GetPackageLogger(empty{})
-	ctx.RegisterMongoDB(db.conn)
+	ctx.RegisterMongoDB(&db.conn)
 
 	return db, nil
 }

@@ -7,12 +7,17 @@ import (
 	"syscall"
 
 	actv1 "github.com/sqsinformatique/rosseti-back/domains/act/v1"
+	objectv1 "github.com/sqsinformatique/rosseti-back/domains/object/v1"
+	orderv1 "github.com/sqsinformatique/rosseti-back/domains/order/v1"
 	profilev1 "github.com/sqsinformatique/rosseti-back/domains/profile/v1"
+	sessionv1 "github.com/sqsinformatique/rosseti-back/domains/session/v1"
+	templatev1 "github.com/sqsinformatique/rosseti-back/domains/template/v1"
 	userv1 "github.com/sqsinformatique/rosseti-back/domains/user/v1"
 	"github.com/sqsinformatique/rosseti-back/internal/cfg"
 	"github.com/sqsinformatique/rosseti-back/internal/context"
 	"github.com/sqsinformatique/rosseti-back/internal/db"
 	"github.com/sqsinformatique/rosseti-back/internal/httpsrv"
+	"github.com/sqsinformatique/rosseti-back/internal/mongo"
 	"github.com/sqsinformatique/rosseti-back/internal/orm"
 
 	// other
@@ -42,6 +47,11 @@ func serveHandler(cmd *cobra.Command, args []string) {
 		log.Fatal().Err(err).Msg("Failed create DB")
 	}
 
+	_, err = mongo.NewMongoDB(ctx)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create DB")
+	}
+
 	// Initilize ORM
 	ORM, err := orm.NewORM("production", ctx)
 	if err != nil {
@@ -59,17 +69,39 @@ func serveHandler(cmd *cobra.Command, args []string) {
 	// _ = metrics.Initialize(ctx)
 
 	// Initilize domains
-	_, err = userv1.NewUserV1(ctx, ORM)
+	SessionV1, err := sessionv1.NewSessionV1(ctx, ORM)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create SessionV1")
+	}
+
+	UserV1, err := userv1.NewUserV1(ctx, ORM, SessionV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create UserV1")
 	}
-	ProfileV1, err := profilev1.NewProfileV1(ctx, ORM)
+
+	ProfileV1, err := profilev1.NewProfileV1(ctx, ORM, UserV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create ProfileV1")
 	}
-	_, err = actv1.NewActV1(ctx, config, ProfileV1, ORM)
+
+	_, err = actv1.NewActV1(ctx, ProfileV1, ORM, UserV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create ActV1")
+	}
+
+	_, err = orderv1.NewOrderV1(ctx, ORM, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create OrderV1")
+	}
+
+	_, err = objectv1.NewObjectV1(ctx, ORM, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create ObjectV1")
+	}
+
+	_, err = templatev1.NewTemplateV1(ctx, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create ObjectV1")
 	}
 
 	// Start connect

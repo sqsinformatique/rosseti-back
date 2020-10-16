@@ -12,6 +12,7 @@ import (
 
 	"github.com/sqsinformatique/rosseti-back/internal/db"
 	"github.com/sqsinformatique/rosseti-back/models"
+	"github.com/sqsinformatique/rosseti-back/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
@@ -22,7 +23,8 @@ var (
 )
 
 func (a *ActV1) actsDB() *mongo.Collection {
-	return a.mongodb.Database(a.cfg.Mongo.ActsDB).Collection("acts")
+	mongoconn := *a.mongodb
+	return mongoconn.Database(a.cfg.Mongo.ActsDB).Collection("acts")
 }
 
 func (a *ActV1) CreateAct(request *models.Act) (*models.Act, error) {
@@ -102,11 +104,12 @@ func (a *ActV1) GetActByID(id string) (data *models.Act, err error) {
 
 	data = &models.Act{}
 
-	if a.db == nil {
+	conn := *a.db
+	if conn == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	err = a.db.Get(data, "select * from production.acts where id=$1", actID)
+	err = conn.Get(data, "select * from production.acts where id=$1", actID)
 	if err != nil {
 		return nil, err
 	}
@@ -122,6 +125,74 @@ func (a *ActV1) GetActByID(id string) (data *models.Act, err error) {
 	}
 
 	data.Body = result.Body
+
+	return data, nil
+}
+
+func (a *ActV1) GetActsByDate(timeStart, timeEnd types.NullTime) (data *ArrayOfOActData, err error) {
+	conn := *a.db
+	if conn == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.acts where updated_at>=$1 and updated_at<=$2"), timeStart, timeEnd)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	data = &ArrayOfOActData{}
+
+	for rows.Next() {
+		var item models.Act
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		filter := bson.D{{"id", item.ID}}
+
+		var result models.Act
+		err = a.actsDB().FindOne(context.TODO(), filter).Decode(&result)
+		if err != nil {
+			return nil, err
+		}
+
+		item.Body = result.Body
+
+		*data = append(*data, item)
+	}
+
+	return data, nil
+}
+
+func (a *ActV1) GetActsByUserID(id string) (data *ArrayOfOActData, err error) {
+	filter := bson.D{{"user_id", id}}
+
+	data = &ArrayOfOActData{}
+
+	cur, err := a.actsDB().Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	for cur.Next(context.TODO()) {
+		// create a value into which the single document can be decoded
+		var elem models.Act
+		err := cur.Decode(&elem)
+		if err != nil {
+			return nil, err
+		}
+
+		*data = append(*data, elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	cur.Close(context.TODO())
 
 	return data, nil
 }
@@ -174,8 +245,9 @@ func (a *ActV1) CreateImages(actID string, multipartForm *multipart.Form) error 
 	for _, fileHeaders := range multipartForm.File {
 		for _, fileHeader := range fileHeaders {
 			file, _ := fileHeader.Open()
+			mongoconn := *a.mongodb
 			bucket, err := gridfs.NewBucket(
-				a.mongodb.Database(a.cfg.Mongo.ImageDB),
+				mongoconn.Database(a.cfg.Mongo.ImageDB),
 			)
 			if err != nil {
 				return err
@@ -201,8 +273,9 @@ func (a *ActV1) CreateImages(actID string, multipartForm *multipart.Form) error 
 }
 
 func (a *ActV1) GetImage(actID, imageID string) (*bytes.Buffer, int64, error) {
+	mongoconn := *a.mongodb
 	bucket, err := gridfs.NewBucket(
-		a.mongodb.Database(a.cfg.Mongo.ImageDB),
+		mongoconn.Database(a.cfg.Mongo.ImageDB),
 	)
 	if err != nil {
 		return nil, 0, err
@@ -253,11 +326,12 @@ func (a *ActV1) SoftDeleteActByID(id string) (err error) {
 }
 
 func (a *ActV1) HardDeleteActByID(id string) (err error) {
+	conn := *a.db
 	if a.db == nil {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = a.db.Exec(a.db.Rebind("DELETE FROM production.acts WHERE id=$1"), id)
+	_, err = conn.Exec(conn.Rebind("DELETE FROM production.acts WHERE id=$1"), id)
 	if err != nil {
 		return err
 	}

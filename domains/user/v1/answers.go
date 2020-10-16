@@ -6,3 +6,5 @@ import (
 )
 
 type UserDataResult httpsrv.ResultAnsw
+
+type SessionDataResult httpsrv.ResultAnsw

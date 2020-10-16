@@ -3,6 +3,8 @@ package models
 import (
 	// local
 	"errors"
+
+	"github.com/sqsinformatique/rosseti-back/types"
 )
 
 var (
@@ -30,13 +32,14 @@ func (c *Credentials) Validate() error {
 
 // NewCredentials is a stuct for create user
 type NewCredentials struct {
-	Password string `json:"user_password"`
-	Email    string `json:"user_email"`
-	Phone    string `json:"user_phone"`
+	Password string     `json:"user_password"`
+	Email    string     `json:"user_email"`
+	Phone    string     `json:"user_phone"`
+	Role     types.Role `json:"user_role"`
 }
 
 func (c *NewCredentials) String() string {
-	return "Email: " + c.Email + ", Phone: " + c.Phone[0:4] + "****" + c.Phone[len(c.Phone)-2:]
+	return "Email: " + c.Email + ", Phone: " + c.Phone[0:4] + "****" + c.Phone[len(c.Phone)-2:] + ", Role: " + c.Role.String()
 }
 
 func (c *NewCredentials) Validate() error {

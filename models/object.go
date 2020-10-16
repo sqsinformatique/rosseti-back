@@ -5,11 +5,10 @@ import (
 )
 
 type Object struct {
-	ID      int    `json:"id" db:"id"`
-	Address string `json:"object_address" db:"object_address"`
-	Type    string `json:"object_type" db:"object_type"`
-	// Field for document body
-	Meta types.NullMeta `json:"meta" db:"meta"`
+	ID      int            `json:"id" db:"id"`
+	Address string         `json:"object_address" db:"object_address"`
+	Type    string         `json:"object_type" db:"object_type"`
+	Meta    types.NullMeta `json:"meta" db:"meta"`
 	Timestamp
 }
 

@@ -20,6 +20,7 @@ func (o *ProfileV1) CreateProfile(request *models.Profile) (*models.Profile, err
 	}
 
 	request.PrivateKey, request.PublicKey = crypto.MarshalSign(sign)
+	o.log.Debug().Msgf("length privateKey %d length publicKey %d", len(request.PrivateKey), len(request.PublicKey))
 
 	result, err := o.orm.InsertInto("profiles", request)
 	if err != nil {
@@ -32,11 +33,12 @@ func (o *ProfileV1) CreateProfile(request *models.Profile) (*models.Profile, err
 func (o *ProfileV1) GetProfileByID(id int64) (data *models.Profile, err error) {
 	data = &models.Profile{}
 
+	conn := *o.db
 	if o.db == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	err = o.db.Get(data, "select * from production.profiles where id=$1", id)
+	err = conn.Get(data, "select * from production.profiles where id=$1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -121,11 +123,12 @@ func (u *ProfileV1) SoftDeleteProfileByID(id int64) (err error) {
 }
 
 func (u *ProfileV1) HardDeleteProfileByID(id int64) (err error) {
-	if u.db == nil {
+	conn := *u.db
+	if conn == nil {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = u.db.Exec(u.db.Rebind("DELETE FROM production.profiles WHERE id=$1"), id)
+	_, err = conn.Exec(conn.Rebind("DELETE FROM production.profiles WHERE id=$1"), id)
 
 	if err != nil {
 		return err

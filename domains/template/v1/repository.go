@@ -9,8 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (t *TemplateV1) templateDB() *mongo.Collection {
-	return t.mongodb.Database(t.cfg.Mongo.TemplateDB).Collection("templates")
+func (tt *TemplateV1) templateDB() *mongo.Collection {
+	mongoconn := *tt.mongodb
+	return mongoconn.Database(tt.cfg.Mongo.TemplateDB).Collection("templates")
 }
 
 func (t *TemplateV1) GetTemplateByID(id string) (data *models.Template, err error) {

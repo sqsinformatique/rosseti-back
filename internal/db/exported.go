@@ -30,7 +30,7 @@ func NewDB(ctx *context.Context) (*DB, error) {
 	db := &DB{}
 	db.config = ctx.Config
 	db.log = ctx.GetPackageLogger(empty{})
-	ctx.RegisterDatabase(db.conn)
+	ctx.RegisterDatabase(&db.conn)
 
 	db.SetSchemaName("production")
 

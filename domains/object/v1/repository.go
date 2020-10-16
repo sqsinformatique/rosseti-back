@@ -24,11 +24,12 @@ func (o *ObjectV1) CreateObject(request *models.Object) (*models.Object, error) 
 func (o *ObjectV1) GetObjectByID(id int64) (data *models.Object, err error) {
 	data = &models.Object{}
 
-	if o.db == nil {
+	conn := *o.db
+	if conn == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	err = o.db.Get(data, "select * from production.users where id=$1", id)
+	err = conn.Get(data, "select * from production.objects where id=$1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -113,11 +114,12 @@ func (u *ObjectV1) SoftDeleteObjectByID(id int64) (err error) {
 }
 
 func (u *ObjectV1) HardDeleteObjectByID(id int64) (err error) {
-	if u.db == nil {
+	conn := *u.db
+	if conn == nil {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = u.db.Exec(u.db.Rebind("DELETE FROM production.objects WHERE id=$1"), id)
+	_, err = conn.Exec(conn.Rebind("DELETE FROM production.objects WHERE id=$1"), id)
 
 	if err != nil {
 		return err

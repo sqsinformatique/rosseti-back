@@ -24,11 +24,12 @@ func (o *OrderV1) CreateOrder(request *models.Order) (*models.Order, error) {
 func (o *OrderV1) GetOrderByID(id int64) (data *models.Order, err error) {
 	data = &models.Order{}
 
-	if o.db == nil {
+	conn := *o.db
+	if conn == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	err = o.db.Get(data, "select * from production.profiles where id=$1", id)
+	err = conn.Get(data, "select * from production.orders where id=$1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -36,6 +37,34 @@ func (o *OrderV1) GetOrderByID(id int64) (data *models.Order, err error) {
 	o.log.Debug().Msgf("user %+v", data)
 
 	return
+}
+
+func (u *OrderV1) GetOrdersByUserID(id int64) (data *ArrayOfOrderData, err error) {
+	conn := *u.db
+	if conn == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.orders where staff_id=$1"), id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	data = &ArrayOfOrderData{}
+
+	for rows.Next() {
+		var item models.Order
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		*data = append(*data, item)
+	}
+
+	return data, err
 }
 
 func mergeOrderData(oldData *models.Order, patch *[]byte) (newData *models.Order, err error) {
@@ -113,11 +142,12 @@ func (u *OrderV1) SoftDeleteOrderByID(id int64) (err error) {
 }
 
 func (u *OrderV1) HardDeleteOrderByID(id int64) (err error) {
+	conn := *u.db
 	if u.db == nil {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = u.db.Exec(u.db.Rebind("DELETE FROM production.orders WHERE id=$1"), id)
+	_, err = conn.Exec(conn.Rebind("DELETE FROM production.orders WHERE id=$1"), id)
 
 	if err != nil {
 		return err

@@ -2,14 +2,17 @@ package userv1
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sqsinformatique/rosseti-back/internal/httpsrv"
 	"github.com/sqsinformatique/rosseti-back/internal/logger"
 	"github.com/sqsinformatique/rosseti-back/models"
+	"github.com/sqsinformatique/rosseti-back/types"
 )
 
 func (u *UserV1) userPostHandler(ec echo.Context) (err error) {
@@ -274,4 +277,105 @@ func (u *UserV1) UserDeleteHandler(ec echo.Context) (err error) {
 		http.StatusOK,
 		httpsrv.OkResult(),
 	)
+}
+
+func (u *UserV1) authPostHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&u.log, ec)
+
+	var cred models.Credentials
+	err = ec.Bind(&cred)
+	if err != nil {
+		hndlLog.Err(err).Msgf("GET USER FAILED %+v", &cred)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	data, err := u.GetUserDataByCreds(&cred)
+	if err != nil {
+		hndlLog.Err(err).Msgf("GET USER FAILED %+v", &cred)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	session, err := u.sessionV1.CreateSession(data.ID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("CREATE SESSION FAILED %+v", &cred)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = "rosseti-session"
+	cookie.Value = session.ID
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+
+	return ec.JSON(
+		http.StatusOK,
+		SessionDataResult{Body: session},
+	)
+}
+
+func (u *UserV1) Introspect(next echo.HandlerFunc, minRole types.Role) echo.HandlerFunc {
+	return func(ec echo.Context) error {
+		if !u.enableintrospect {
+			return next(ec)
+		}
+
+		// Main code of handler
+		hndlLog := logger.HandlerLogger(&u.log, ec)
+
+		idCookie, err := ec.Cookie("rosseti-session")
+		if err != nil {
+			hndlLog.Err(err).Msg("GET SESSION FAILED")
+
+			return ec.JSON(
+				http.StatusBadRequest,
+				httpsrv.BadRequest(err),
+			)
+		}
+
+		session, err := u.sessionV1.GetSession(idCookie.Value)
+		if err != nil {
+			hndlLog.Err(err).Msgf("GET SESSION FAILED %s", idCookie.Value)
+
+			return ec.JSON(
+				http.StatusBadRequest,
+				httpsrv.BadRequest(err),
+			)
+		}
+
+		hndlLog.Debug().Msgf("good session for userID %d", session.UserID)
+
+		user, err := u.GetUserByID(int64(session.UserID))
+		if err != nil {
+			hndlLog.Err(err).Msgf("GET USER FAILED %s", idCookie.Value)
+
+			return ec.JSON(
+				http.StatusBadRequest,
+				httpsrv.BadRequest(err),
+			)
+		}
+
+		if user.Role < minRole {
+			err = errors.New("restricted access to user")
+			hndlLog.Err(err).Msgf("RESTRICTED ACCESS to USER %d", session.UserID)
+
+			return ec.JSON(
+				http.StatusForbidden,
+				httpsrv.Forbidden(err),
+			)
+		}
+
+		return next(ec)
+	}
 }

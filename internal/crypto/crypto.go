@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -55,15 +56,17 @@ func MarshalSign(key *rsa.PrivateKey) (privateKey, publicKey string) {
 	privateKeyData := x509.MarshalPKCS1PrivateKey(key)
 	publicKeyData := x509.MarshalPKCS1PublicKey(&key.PublicKey)
 
-	return string(privateKeyData), string(publicKeyData)
+	return base64.StdEncoding.EncodeToString(privateKeyData), base64.StdEncoding.EncodeToString(publicKeyData)
 }
 
 func UnmarshalPrivate(privateKey string) (*rsa.PrivateKey, error) {
-	return x509.ParsePKCS1PrivateKey([]byte(privateKey))
+	uDec, _ := base64.URLEncoding.DecodeString(privateKey)
+	return x509.ParsePKCS1PrivateKey(uDec)
 }
 
 func UnmarshalPublic(publicKey string) (*rsa.PublicKey, error) {
-	return x509.ParsePKCS1PublicKey([]byte(publicKey))
+	uDec, _ := base64.URLEncoding.DecodeString(publicKey)
+	return x509.ParsePKCS1PublicKey(uDec)
 }
 
 func DataSign(data interface{}, key *rsa.PrivateKey) (string, error) {

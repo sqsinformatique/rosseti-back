@@ -9,6 +9,7 @@ import (
 type User struct {
 	ID    int            `json:"id" db:"id"`
 	Hash  string         `json:"-" db:"user_hash"`
+	Role  types.Role     `json:"user_role" db:"user_role"`
 	Email string         `json:"user_email" db:"user_email"`
 	Phone string         `json:"user_phone" db:"user_phone"`
 	Meta  types.NullMeta `json:"meta" db:"meta"`
@@ -18,7 +19,7 @@ type User struct {
 func (u *User) SQLParamsRequest() []string {
 	return []string{
 		"user_hash",
-		"hash_email",
+		"user_email",
 		"user_phone",
 		"meta",
 		"created_at",

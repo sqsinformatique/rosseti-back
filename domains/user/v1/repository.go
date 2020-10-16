@@ -10,6 +10,7 @@ import (
 	"github.com/sqsinformatique/rosseti-back/internal/db"
 	"github.com/sqsinformatique/rosseti-back/internal/utils"
 	"github.com/sqsinformatique/rosseti-back/models"
+	"github.com/sqsinformatique/rosseti-back/types"
 )
 
 var (
@@ -28,6 +29,7 @@ func (u *UserV1) CreateUser(request *models.NewCredentials) (*models.User, error
 		Hash:  crypto.HashString(request.Password),
 		Email: email,
 		Phone: request.Phone,
+		Role:  types.User,
 	}
 
 	data.CreateTimestamp()
@@ -43,11 +45,12 @@ func (u *UserV1) CreateUser(request *models.NewCredentials) (*models.User, error
 func (u *UserV1) GetUserByID(id int64) (data *models.User, err error) {
 	data = &models.User{}
 
-	if u.db == nil {
+	conn := *u.db
+	if conn == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	err = u.db.Get(data, "select * from production.users where id=$1", id)
+	err = conn.Get(data, "select * from production.users where id=$1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -60,13 +63,14 @@ func (u *UserV1) GetUserByID(id int64) (data *models.User, err error) {
 func (u *UserV1) GetUserDataByCreds(c *models.Credentials) (data *models.User, err error) {
 	data = &models.User{}
 
-	if u.db == nil {
+	conn := *u.db
+	if conn == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
 
 	// Get user from DB
 	if c.Phone != "" {
-		err = u.db.Get(data, "select * from production.user where user_phone=$1", c.Phone)
+		err = conn.Get(data, "select * from production.users where user_phone=$1", c.Phone)
 	} else if c.Email != "" {
 		// Normalize email
 		email, err1 := utils.NormalizeEmail(c.Email)
@@ -74,7 +78,7 @@ func (u *UserV1) GetUserDataByCreds(c *models.Credentials) (data *models.User, e
 			return nil, err1
 		}
 
-		err = u.db.Get(data, "select * from production.user where user_email=$1", email)
+		err = conn.Get(data, "select * from production.users where user_email=$1", email)
 	}
 
 	if err != nil {
@@ -184,11 +188,12 @@ func (u *UserV1) SoftDeleteUserByID(id int64) (err error) {
 }
 
 func (u *UserV1) HardDeleteUserByID(id int64) (err error) {
-	if u.db == nil {
+	conn := *u.db
+	if conn == nil {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = u.db.Exec(u.db.Rebind("DELETE FROM production.user WHERE user_id=$1"), id)
+	_, err = conn.Exec(conn.Rebind("DELETE FROM production.users WHERE user_id=$1"), id)
 
 	if err != nil {
 		return err

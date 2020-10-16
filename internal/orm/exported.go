@@ -17,7 +17,7 @@ type Inserter interface {
 
 type ORM struct {
 	schema string
-	db     *sqlx.DB
+	db     **sqlx.DB
 }
 
 func NewORM(schema string, ctx *context.Context) (*ORM, error) {
@@ -33,12 +33,13 @@ func NewORM(schema string, ctx *context.Context) (*ORM, error) {
 }
 
 func (o *ORM) InsertInto(target string, data Inserter) (interface{}, error) {
-	if o.db == nil {
+	conn := *o.db
+	if conn == nil {
 		return nil, ErrDBConnNotEstablished
 	}
 
-	stmt, err := o.db.PrepareNamed(
-		o.db.Rebind(utils.JoinStrings(" ", "INSERT INTO", o.schema+"."+target, "("+strings.Join(data.SQLParamsRequest(), ", ")+")",
+	stmt, err := conn.PrepareNamed(
+		conn.Rebind(utils.JoinStrings(" ", "INSERT INTO", o.schema+"."+target, "("+strings.Join(data.SQLParamsRequest(), ", ")+")",
 			"VALUES", "("+":"+strings.Join(data.SQLParamsRequest(), ", :")+") RETURNING *")))
 	if err != nil {
 		return nil, err
@@ -56,12 +57,13 @@ func (o *ORM) Update(target string, writeData Inserter) (interface{}, error) {
 		query = append(query, param+"=:"+param)
 	}
 
-	if o.db == nil {
+	conn := *o.db
+	if conn == nil {
 		return nil, ErrDBConnNotEstablished
 	}
 
-	_, err := o.db.NamedExec(
-		o.db.Rebind(utils.JoinStrings(" ", "UPDATE"+o.schema+"."+target+"SET", strings.Join(query, ", "),
+	_, err := conn.NamedExec(
+		conn.Rebind(utils.JoinStrings(" ", "UPDATE"+o.schema+"."+target+"SET", strings.Join(query, ", "),
 			"WHERE id=:id")),
 		writeData)
 	if err != nil {

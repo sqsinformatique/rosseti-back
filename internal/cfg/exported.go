@@ -9,6 +9,10 @@ import (
 )
 
 type AppCfg struct {
+	Introspection struct {
+		Enable bool `envconfig:"default=true"`
+	}
+
 	Mongo struct {
 		DSN        string `envconfig:"default=mongodb://localhost:27017"`
 		ImageDB    string `envconfig:"default=images"`

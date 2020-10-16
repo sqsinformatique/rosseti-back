@@ -34,6 +34,28 @@ func (a *ActV1) actGetHandler(ec echo.Context) (err error) {
 	)
 }
 
+func (a *ActV1) actsByUserIDGetHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&a.log, ec)
+
+	userID := ec.Param("id")
+
+	actData, err := a.GetActsByUserID(userID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get act %s", userID)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ActDataResult{Body: actData},
+	)
+}
+
 func (a *ActV1) actPostHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&a.log, ec)
@@ -182,5 +204,36 @@ func (a *ActV1) ActDeleteHandler(ec echo.Context) (err error) {
 	return ec.JSON(
 		http.StatusOK,
 		httpsrv.OkResult(),
+	)
+}
+
+func (a *ActV1) ActsGetByDate(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&a.log, ec)
+
+	var timeRange models.TimeRange
+	err = ec.Bind(&timeRange)
+	if err != nil {
+		hndlLog.Err(err).Msgf("CAN NOT GET DATA")
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	actData, err := a.GetActsByDate(timeRange.TimeStart, timeRange.TimeEnd)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get act %+v", timeRange)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ActDataResult{Body: actData},
 	)
 }
