@@ -11,7 +11,6 @@ import (
 	orderv1 "github.com/sqsinformatique/rosseti-back/domains/order/v1"
 	profilev1 "github.com/sqsinformatique/rosseti-back/domains/profile/v1"
 	sessionv1 "github.com/sqsinformatique/rosseti-back/domains/session/v1"
-	templatev1 "github.com/sqsinformatique/rosseti-back/domains/template/v1"
 	userv1 "github.com/sqsinformatique/rosseti-back/domains/user/v1"
 	"github.com/sqsinformatique/rosseti-back/internal/cfg"
 	"github.com/sqsinformatique/rosseti-back/internal/context"
@@ -97,11 +96,6 @@ func serveHandler(cmd *cobra.Command, args []string) {
 	_, err = orderv1.NewOrderV1(ctx, ORM, UserV1, ObjectV1, ProfileV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create OrderV1")
-	}
-
-	_, err = templatev1.NewTemplateV1(ctx, UserV1)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed create ObjectV1")
 	}
 
 	// Start connect
