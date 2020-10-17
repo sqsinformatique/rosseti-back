@@ -9,7 +9,7 @@ type ActsDetail struct {
 	ElementID   int            `json:"element_id" db:"element_id"`
 	ElementDesc interface{}    `json:"element_desc"`
 	Defects     types.NullMeta `json:"defects" db:"defects"`
-	DefectsDef  interface{}    `json:"defects_desc"`
+	DefectsDesc interface{}    `json:"defects_desc"`
 	Category    int            `json:"category" db:"category"`
 	RepairedAt  types.NullTime `json:"repaired_at" db:"repaired_at"`
 	Images      types.NullMeta `json:"images" db:"images"`

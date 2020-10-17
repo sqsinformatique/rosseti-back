@@ -125,17 +125,18 @@ CREATE TABLE IF NOT EXISTS production.defects (
     id serial PRIMARY KEY,
     element_type INTEGER NOT NULL,
     description character varying(2048) DEFAULT '',
+    category INTEGER NOT NULL,
     meta jsonb,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
     deleted_at timestamp with time zone
 );
 
-INSERT INTO production.defects (element_type, description) VALUES (1, 'Отсутствие диспетчерских названий');
-INSERT INTO production.defects (element_type, description) VALUES (2, 'Наличие кустарника под проводами');
-INSERT INTO production.defects (element_type, description) VALUES (1, 'Отсутствие плаката, знака безопасности');
-INSERT INTO production.defects (element_type, description) VALUES (1, 'Наклон опоры');
-INSERT INTO production.defects (element_type, description) VALUES (2, 'Негабарит провода');
+INSERT INTO production.defects (element_type, description, category) VALUES (1, 2, 'Отсутствие диспетчерских названий');
+INSERT INTO production.defects (element_type, description, category) VALUES (2, 2, 'Наличие кустарника под проводами');
+INSERT INTO production.defects (element_type, description, category) VALUES (1, 1, 'Отсутствие плаката, знака безопасности');
+INSERT INTO production.defects (element_type, description, category) VALUES (1, 4, 'Наклон опоры');
+INSERT INTO production.defects (element_type, description, category) VALUES (2, 3, 'Негабарит провода');
 
 CREATE TABLE IF NOT EXISTS production.orders (
     id serial PRIMARY KEY,
@@ -146,7 +147,9 @@ CREATE TABLE IF NOT EXISTS production.orders (
     start_at timestamp with time zone,
     end_at timestamp with time zone,
     superviser_sign character varying(2048) DEFAULT '',
+    superviser_sign_at timestamp with time zone,
     staff_sign character varying(2048) DEFAULT '',
+    staff_sign_at timestamp with time zone,
     meta jsonb,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
@@ -252,6 +255,21 @@ CREATE TABLE IF NOT EXISTS production.sessions (
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
     deleted_at timestamp with time zone
 );
+
+CREATE TABLE IF NOT EXISTS production.categorys (
+    id serial PRIMARY KEY,
+    rapair_period INTEGER NOT NULL,
+    description character varying(255) DEFAULT '',
+    meta jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    deleted_at timestamp with time zone
+);
+
+INSERT INTO production.categorys (rapair_period) VALUES (15, 'не критично');
+INSERT INTO production.categorys (rapair_period) VALUES (10, 'мало критично');
+INSERT INTO production.categorys (rapair_period) VALUES (5, 'критично');
+INSERT INTO production.categorys (rapair_period) VALUES (3, 'особо критично');
 
 -- +goose Down
 DROP TABLE production.users;

@@ -56,7 +56,7 @@ func (o *ActsDetailV1) GetAllActsDetailByID(id, objectID int64) (data *ArrayOfAc
 			}
 		}
 
-		item.DefectsDef = defects
+		item.DefectsDesc = defects
 
 		elementDesc, err := o.objectsdetailV1.GetObjectsDetailByID(objectID, int64(item.ElementID))
 		if err != nil {

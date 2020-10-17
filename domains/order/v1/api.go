@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -123,6 +124,8 @@ func (o *OrderV1) OrderSignSuperviserPostHandler(ec echo.Context) (err error) {
 			httpsrv.NotUpdated(err),
 		)
 	}
+	orderData.SuperviserSignEt.Time = time.Now()
+	orderData.SuperviserSignEt.Valid = true
 
 	jsonObject, err := json.Marshal(orderData)
 	if err != nil {
@@ -209,6 +212,9 @@ func (o *OrderV1) OrderSignStaffPostHandler(ec echo.Context) (err error) {
 			httpsrv.NotUpdated(err),
 		)
 	}
+
+	orderData.StaffSignEt.Time = time.Now()
+	orderData.StaffSignEt.Valid = true
 
 	jsonObject, err := json.Marshal(orderData)
 	if err != nil {
