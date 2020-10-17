@@ -294,6 +294,16 @@ func (u *UserV1) authPostHandler(ec echo.Context) (err error) {
 		)
 	}
 
+	err = cred.Validate()
+	if err != nil {
+		hndlLog.Err(err).Msgf("GET USER FAILED %+v", &cred)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
 	data, err := u.GetUserDataByCreds(&cred)
 	if err != nil {
 		hndlLog.Err(err).Msgf("GET USER FAILED %+v", &cred)
