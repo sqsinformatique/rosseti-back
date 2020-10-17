@@ -159,7 +159,7 @@ Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZ
 	"value":"не"
 }
 
-### Search tech task
+### Search object detail
 GET {{publicURL}}/{{apiV}}/objectsdetailsearch
 Content-Type: application/json
 Accept: application/json
@@ -169,5 +169,18 @@ Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZ
 	"value": "про",
 	"ext_filter": {
 		"object_id": 1
+	}
+}
+
+### Search defect
+GET {{publicURL}}/{{apiV}}/defectsearch
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+{
+	"value": "отсу",
+	"ext_filter": {
+		"element_type": 1
 	}
 }

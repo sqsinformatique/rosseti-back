@@ -72,6 +72,38 @@ func (o *DefectV1) DefectGetHandler(ec echo.Context) (err error) {
 	)
 }
 
+func (o DefectV1) DefectSearchGetHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&o.log, ec)
+
+	var value models.Search
+
+	err = ec.Bind(&value)
+	if err != nil {
+		hndlLog.Err(err).Msg("BAD REQUEST")
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	techTaskData, err := o.SearchDefectsByName(&value)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get techTaskData %+v", &value)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		DefectDataResult{Body: techTaskData},
+	)
+}
+
 func (o *DefectV1) DefectPutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)

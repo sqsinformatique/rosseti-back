@@ -39,6 +39,36 @@ func (o *DefectV1) GetDefectByID(id int64) (data *models.Defect, err error) {
 	return
 }
 
+func (d *DefectV1) SearchDefectsByName(value *models.Search) (data *ArrayOfDefectData, err error) {
+	conn := *d.db
+	if d.db == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	elementType := int64(value.ExtFilter["element_type"].(float64))
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.defects where element_type=$1 and description ilike $2"), elementType, value.Value+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	data = &ArrayOfDefectData{}
+
+	for rows.Next() {
+		var item models.Defect
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		*data = append(*data, item)
+	}
+
+	return data, nil
+}
+
 func mergeDefectData(oldData *models.Defect, patch *[]byte) (newData *models.Defect, err error) {
 	id := oldData.ID
 

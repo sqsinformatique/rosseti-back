@@ -37,6 +37,7 @@ func NewDefectV1(ctx *context.Context, orm *orm.ORM, userV1 *userv1.UserV1) (*De
 
 	p.publicV1.POST("/defect", p.userV1.Introspect(p.DefectPostHandler, types.Electrician))
 	p.publicV1.GET("/defect/:id", p.userV1.Introspect(p.DefectGetHandler, types.Electrician))
+	p.publicV1.GET("/defectsearch", p.userV1.Introspect(p.DefectSearchGetHandler, types.Electrician))
 	p.publicV1.PUT("/defect/:id", p.userV1.Introspect(p.DefectPutHandler, types.Electrician))
 	p.publicV1.DELETE("/defect/:id", p.userV1.Introspect(p.DefectDeleteHandler, types.Admin))
 
