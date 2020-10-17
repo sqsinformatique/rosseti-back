@@ -56,6 +56,21 @@ func (o *OrderV1) GetOrderByID(id int64) (data *models.Order, err error) {
 
 	data.ObjectDesc = object
 
+	var techtasks []*models.TechTask
+	for _, v := range data.TechTasks.Map {
+		for _, w := range v.([]interface{}) {
+			z := w.(map[string]interface{})
+			task, err := o.techtaskV1.GetTechTaskByID(int64(z["task_id"].(float64)))
+			if err != nil {
+				return nil, err
+			}
+
+			techtasks = append(techtasks, task)
+		}
+	}
+
+	data.TechTasksDesc = techtasks
+
 	return
 }
 

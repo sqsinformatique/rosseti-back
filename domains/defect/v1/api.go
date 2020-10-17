@@ -1,4 +1,4 @@
-package profilev1
+package defectv1
 
 import (
 	"io/ioutil"
@@ -11,14 +11,14 @@ import (
 	"github.com/sqsinformatique/rosseti-back/models"
 )
 
-func (o *ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
+func (o *DefectV1) DefectPostHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	var profile models.Profile
-	err = ec.Bind(&profile)
+	var defect models.Defect
+	err = ec.Bind(&defect)
 	if err != nil {
-		hndlLog.Err(err).Msgf("CREATE USER FAILED %+v", &profile)
+		hndlLog.Err(err).Msgf("CREATE USER FAILED %+v", &defect)
 
 		return ec.JSON(
 			http.StatusBadRequest,
@@ -26,9 +26,9 @@ func (o *ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
 		)
 	}
 
-	profileData, err := o.CreateProfile(&profile)
+	defectData, err := o.CreateDefect(&defect)
 	if err != nil {
-		hndlLog.Err(err).Msgf("CREATE ORDER FAILED %+v", &profile)
+		hndlLog.Err(err).Msgf("CREATE ORDER FAILED %+v", &defect)
 
 		return ec.JSON(
 			http.StatusConflict,
@@ -38,15 +38,15 @@ func (o *ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		DefectDataResult{Body: defectData},
 	)
 }
 
-func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
+func (o *DefectV1) DefectGetHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	profileID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	defectID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -56,9 +56,9 @@ func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
 		)
 	}
 
-	profileData, err := o.GetProfileByID(profileID)
+	defectData, err := o.GetDefectByID(defectID)
 	if err != nil {
-		hndlLog.Err(err).Msgf("NOT FOUND, id %d", profileID)
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", defectID)
 
 		return ec.JSON(
 			http.StatusNotFound,
@@ -68,15 +68,15 @@ func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		DefectDataResult{Body: defectData},
 	)
 }
 
-func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
+func (o *DefectV1) DefectPutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	profileID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	defectID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -93,7 +93,7 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 		ec.Request().Body.Close()
 
 		if err != nil {
-			hndlLog.Err(err).Msgf("ORDER DATA NOT UPDATED, id %d", profileID)
+			hndlLog.Err(err).Msgf("ORDER DATA NOT UPDATED, id %d", defectID)
 
 			return ec.JSON(
 				http.StatusBadRequest,
@@ -102,9 +102,9 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 		}
 	}
 
-	profileData, err := o.UpdateProfileByID(profileID, &bodyBytes)
+	defectData, err := o.UpdateDefectByID(defectID, &bodyBytes)
 	if err != nil {
-		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", profileID, string(bodyBytes))
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", defectID, string(bodyBytes))
 
 		return ec.JSON(
 			http.StatusConflict,
@@ -114,11 +114,11 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		DefectDataResult{Body: defectData},
 	)
 }
 
-func (o *ProfileV1) ProfileDeleteHandler(ec echo.Context) (err error) {
+func (o *DefectV1) DefectDeleteHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
@@ -134,9 +134,9 @@ func (o *ProfileV1) ProfileDeleteHandler(ec echo.Context) (err error) {
 
 	hard := ec.QueryParam("hard")
 	if hard == "true" {
-		err = o.HardDeleteProfileByID(userID)
+		err = o.HardDeleteDefectByID(userID)
 	} else {
-		err = o.SoftDeleteProfileByID(userID)
+		err = o.SoftDeleteDefectByID(userID)
 	}
 
 	if err != nil {

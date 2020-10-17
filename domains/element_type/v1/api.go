@@ -1,4 +1,4 @@
-package profilev1
+package elementtypev1
 
 import (
 	"io/ioutil"
@@ -11,14 +11,14 @@ import (
 	"github.com/sqsinformatique/rosseti-back/models"
 )
 
-func (o *ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
+func (o *ElementTypeV1) ElementTypePostHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	var profile models.Profile
-	err = ec.Bind(&profile)
+	var elementtype models.ElementType
+	err = ec.Bind(&elementtype)
 	if err != nil {
-		hndlLog.Err(err).Msgf("CREATE USER FAILED %+v", &profile)
+		hndlLog.Err(err).Msgf("CREATE USER FAILED %+v", &elementtype)
 
 		return ec.JSON(
 			http.StatusBadRequest,
@@ -26,9 +26,9 @@ func (o *ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
 		)
 	}
 
-	profileData, err := o.CreateProfile(&profile)
+	elementtypeData, err := o.CreateElementType(&elementtype)
 	if err != nil {
-		hndlLog.Err(err).Msgf("CREATE ORDER FAILED %+v", &profile)
+		hndlLog.Err(err).Msgf("CREATE ORDER FAILED %+v", &elementtype)
 
 		return ec.JSON(
 			http.StatusConflict,
@@ -38,15 +38,15 @@ func (o *ProfileV1) ProfilePostHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		ElementTypeDataResult{Body: elementtypeData},
 	)
 }
 
-func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
+func (o *ElementTypeV1) ElementTypeGetHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	profileID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	elementtypeID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -56,9 +56,9 @@ func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
 		)
 	}
 
-	profileData, err := o.GetProfileByID(profileID)
+	elementtypeData, err := o.GetElementTypeByID(elementtypeID)
 	if err != nil {
-		hndlLog.Err(err).Msgf("NOT FOUND, id %d", profileID)
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", elementtypeID)
 
 		return ec.JSON(
 			http.StatusNotFound,
@@ -68,15 +68,15 @@ func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		ElementTypeDataResult{Body: elementtypeData},
 	)
 }
 
-func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
+func (o *ElementTypeV1) ElementTypePutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	profileID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	elementtypeID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -93,7 +93,7 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 		ec.Request().Body.Close()
 
 		if err != nil {
-			hndlLog.Err(err).Msgf("ORDER DATA NOT UPDATED, id %d", profileID)
+			hndlLog.Err(err).Msgf("ORDER DATA NOT UPDATED, id %d", elementtypeID)
 
 			return ec.JSON(
 				http.StatusBadRequest,
@@ -102,9 +102,9 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 		}
 	}
 
-	profileData, err := o.UpdateProfileByID(profileID, &bodyBytes)
+	elementtypeData, err := o.UpdateElementTypeByID(elementtypeID, &bodyBytes)
 	if err != nil {
-		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", profileID, string(bodyBytes))
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", elementtypeID, string(bodyBytes))
 
 		return ec.JSON(
 			http.StatusConflict,
@@ -114,11 +114,11 @@ func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 
 	return ec.JSON(
 		http.StatusOK,
-		ProfileDataResult{Body: profileData},
+		ElementTypeDataResult{Body: elementtypeData},
 	)
 }
 
-func (o *ProfileV1) ProfileDeleteHandler(ec echo.Context) (err error) {
+func (o *ElementTypeV1) ElementTypeDeleteHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
@@ -134,9 +134,9 @@ func (o *ProfileV1) ProfileDeleteHandler(ec echo.Context) (err error) {
 
 	hard := ec.QueryParam("hard")
 	if hard == "true" {
-		err = o.HardDeleteProfileByID(userID)
+		err = o.HardDeleteElementTypeByID(userID)
 	} else {
-		err = o.SoftDeleteProfileByID(userID)
+		err = o.SoftDeleteElementTypeByID(userID)
 	}
 
 	if err != nil {

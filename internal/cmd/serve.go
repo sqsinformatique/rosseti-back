@@ -11,6 +11,7 @@ import (
 	orderv1 "github.com/sqsinformatique/rosseti-back/domains/order/v1"
 	profilev1 "github.com/sqsinformatique/rosseti-back/domains/profile/v1"
 	sessionv1 "github.com/sqsinformatique/rosseti-back/domains/session/v1"
+	techtaskv1 "github.com/sqsinformatique/rosseti-back/domains/tech_task/v1"
 	userv1 "github.com/sqsinformatique/rosseti-back/domains/user/v1"
 	"github.com/sqsinformatique/rosseti-back/internal/cfg"
 	"github.com/sqsinformatique/rosseti-back/internal/context"
@@ -83,19 +84,24 @@ func serveHandler(cmd *cobra.Command, args []string) {
 		log.Fatal().Err(err).Msg("Failed create ProfileV1")
 	}
 
-	_, err = actv1.NewActV1(ctx, ProfileV1, ORM, UserV1)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed create ActV1")
-	}
-
 	ObjectV1, err := objectv1.NewObjectV1(ctx, ORM, UserV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create ObjectV1")
 	}
 
-	_, err = orderv1.NewOrderV1(ctx, ORM, UserV1, ObjectV1, ProfileV1)
+	TechTaskV1, err := techtaskv1.NewTechTaskV1(ctx, ORM, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create TechTaskV1")
+	}
+
+	_, err = orderv1.NewOrderV1(ctx, ORM, UserV1, ObjectV1, ProfileV1, TechTaskV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create OrderV1")
+	}
+
+	_, err = actv1.NewActV1(ctx, ProfileV1, ORM, UserV1, ObjectV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create ActV1")
 	}
 
 	// Start connect

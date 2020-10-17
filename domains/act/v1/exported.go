@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
+	objectv1 "github.com/sqsinformatique/rosseti-back/domains/object/v1"
 	profilev1 "github.com/sqsinformatique/rosseti-back/domains/profile/v1"
 	userv1 "github.com/sqsinformatique/rosseti-back/domains/user/v1"
 	"github.com/sqsinformatique/rosseti-back/internal/cfg"
@@ -27,9 +28,14 @@ type ActV1 struct {
 	profilev1 *profilev1.ProfileV1
 	publicV1  *echo.Group
 	userV1    *userv1.UserV1
+	objectV1  *objectv1.ObjectV1
 }
 
-func NewActV1(ctx *context.Context, profilev1 *profilev1.ProfileV1, orm *orm.ORM, userV1 *userv1.UserV1) (*ActV1, error) {
+func NewActV1(ctx *context.Context,
+	profilev1 *profilev1.ProfileV1,
+	orm *orm.ORM,
+	userV1 *userv1.UserV1,
+	objectV1 *objectv1.ObjectV1) (*ActV1, error) {
 	if ctx == nil || profilev1 == nil || orm == nil {
 		return nil, errors.New("empty context or profilev1 client or orm client")
 	}
@@ -43,6 +49,7 @@ func NewActV1(ctx *context.Context, profilev1 *profilev1.ProfileV1, orm *orm.ORM
 	a.mongodb = ctx.GetMongoDB()
 	a.userV1 = userV1
 	a.orm = orm
+	a.objectV1 = objectV1
 
 	a.publicV1.GET("/acts/:actid", a.userV1.Introspect(a.actGetHandler, types.Electrician))
 	a.publicV1.GET("/acts/user/:id", a.userV1.Introspect(a.actsByUserIDGetHandler, types.Electrician))

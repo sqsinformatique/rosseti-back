@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"strconv"
@@ -95,6 +96,26 @@ func (a *ActV1) GetActByID(id string) (data *models.Act, err error) {
 	}
 
 	a.log.Debug().Msgf("acts %+v", data)
+	staff, err := a.profilev1.GetProfileByID(int64(data.StaffID))
+	if err != nil {
+		return nil, fmt.Errorf("failed gets staff: %w", err)
+	}
+
+	data.StaffDesc = staff
+
+	superviser, err := a.profilev1.GetProfileByID(int64(data.SuperviserID))
+	if err != nil {
+		return nil, fmt.Errorf("failed gets superviser: %w", err)
+	}
+
+	data.SuperviserDesc = superviser
+
+	object, err := a.objectV1.GetObjectByID(int64(data.ObjectID))
+	if err != nil {
+		return nil, fmt.Errorf("failed gets object: %w", err)
+	}
+
+	data.ObjectDecs = object
 
 	return data, nil
 }

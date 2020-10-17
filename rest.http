@@ -25,7 +25,7 @@ Accept: application/json
 
 {
 	"user_password": "123456789",
-	"user_phone": "+791699999999"
+	"user_phone": "+79169999999"
 }
 
 ### Get user by id
@@ -39,7 +39,7 @@ Accept: application/json
 Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
 
 {
-	"id": 3,
+	"id": 1,
 	"user_first_name": "Иван",
 	"user_middle_name": "Васильевич",
 	"user_last_name": "Грозный",
@@ -114,3 +114,9 @@ Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZ
 	"object_id": 1,
 	"review_id": 1
 }
+
+### Get act by id
+GET {{publicURL}}/{{apiV}}/acts/1
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
