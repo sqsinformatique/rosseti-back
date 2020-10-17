@@ -72,6 +72,38 @@ func (o *ProfileV1) ProfileGetHandler(ec echo.Context) (err error) {
 	)
 }
 
+func (o ProfileV1) ProfileSearchGetHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&o.log, ec)
+
+	var value models.Search
+
+	err = ec.Bind(&value)
+	if err != nil {
+		hndlLog.Err(err).Msg("BAD REQUEST")
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	profileData, err := o.SearchProfileByLastName(&value)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get profileData %+v", &value)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ProfileDataResult{Body: profileData},
+	)
+}
+
 func (o *ProfileV1) ProfilePutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)

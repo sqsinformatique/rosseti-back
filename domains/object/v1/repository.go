@@ -45,7 +45,7 @@ func (o *ObjectV1) SearchObjectByName(value *models.Search) (data *ArrayOfObject
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	rows, err := conn.Queryx(conn.Rebind("select * from production.objects where object_name like $1"), value.Value+"%")
+	rows, err := conn.Queryx(conn.Rebind("select * from production.objects where object_name ilike $1"), value.Value+"%")
 	if err != nil {
 		return nil, err
 	}

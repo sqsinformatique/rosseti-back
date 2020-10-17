@@ -48,6 +48,34 @@ func (o *ProfileV1) GetProfileByID(id int64) (data *models.Profile, err error) {
 	return
 }
 
+func (p *ProfileV1) SearchProfileByLastName(value *models.Search) (data *ArrayOfProfileData, err error) {
+	conn := *p.db
+	if p.db == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.profiles where user_last_name ilike $1"), value.Value+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	data = &ArrayOfProfileData{}
+
+	for rows.Next() {
+		var item models.Profile
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		*data = append(*data, item)
+	}
+
+	return data, nil
+}
+
 func mergeProfileData(oldData *models.Profile, patch *[]byte) (newData *models.Profile, err error) {
 	id := oldData.ID
 

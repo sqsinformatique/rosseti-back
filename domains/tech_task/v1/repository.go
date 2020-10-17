@@ -39,6 +39,34 @@ func (o *TechTaskV1) GetTechTaskByID(id int64) (data *models.TechTask, err error
 	return
 }
 
+func (p *TechTaskV1) SearchTechTaskByName(value *models.Search) (data *ArrayOfTechTaskData, err error) {
+	conn := *p.db
+	if p.db == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.tech_tasks where description ilike $1"), value.Value+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	data = &ArrayOfTechTaskData{}
+
+	for rows.Next() {
+		var item models.TechTask
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		*data = append(*data, item)
+	}
+
+	return data, nil
+}
+
 func mergeTechTaskData(oldData *models.TechTask, patch *[]byte) (newData *models.TechTask, err error) {
 	id := oldData.ID
 

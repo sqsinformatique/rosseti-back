@@ -37,6 +37,7 @@ func NewTechTaskV1(ctx *context.Context, orm *orm.ORM, userV1 *userv1.UserV1) (*
 
 	p.publicV1.POST("/techtask", p.userV1.Introspect(p.TechTaskPostHandler, types.Electrician))
 	p.publicV1.GET("/techtask/:id", p.userV1.Introspect(p.TechTaskGetHandler, types.Electrician))
+	p.publicV1.GET("/techtasksearch", p.userV1.Introspect(p.TechSearchGetHandler, types.Electrician))
 	p.publicV1.PUT("/techtask/:id", p.userV1.Introspect(p.TechTaskPutHandler, types.Electrician))
 	p.publicV1.DELETE("/techtask/:id", p.userV1.Introspect(p.TechTaskDeleteHandler, types.Admin))
 

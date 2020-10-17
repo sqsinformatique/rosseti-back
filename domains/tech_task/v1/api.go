@@ -72,6 +72,38 @@ func (o *TechTaskV1) TechTaskGetHandler(ec echo.Context) (err error) {
 	)
 }
 
+func (o *TechTaskV1) TechSearchGetHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&o.log, ec)
+
+	var value models.Search
+
+	err = ec.Bind(&value)
+	if err != nil {
+		hndlLog.Err(err).Msg("BAD REQUEST")
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	techTaskData, err := o.SearchTechTaskByName(&value)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get techTaskData %+v", &value)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		TechTaskDataResult{Body: techTaskData},
+	)
+}
+
 func (o *TechTaskV1) TechTaskPutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)

@@ -38,6 +38,7 @@ func NewProfileV1(ctx *context.Context, orm *orm.ORM, userV1 *userv1.UserV1) (*P
 
 	p.publicV1.POST("/profiles", p.userV1.Introspect(p.ProfilePostHandler, types.Electrician))
 	p.publicV1.GET("/profiles/:id", p.userV1.Introspect(p.ProfileGetHandler, types.Electrician))
+	p.publicV1.GET("/profilessearch", p.userV1.Introspect(p.ProfileSearchGetHandler, types.Electrician))
 	p.publicV1.PUT("/profiles/:id", p.userV1.Introspect(p.ProfilePutHandler, types.Electrician))
 	p.publicV1.DELETE("/profiles/:id", p.userV1.Introspect(p.ProfileDeleteHandler, types.Admin))
 

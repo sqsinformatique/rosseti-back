@@ -51,6 +51,16 @@ Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZ
 GET {{publicURL}}/{{apiV}}/profiles/1 HTTP/1.1
 Cookie: rosseti-session=MxfdRjewVOHdK31it4vMOWCbEOwbPyGQ1tWWpTeNQMRea90EMmd2mkvYw7itvF0KLE2Xl9kpm7mB1JV6YRR6JWoj8ExEQdMo7F1N;
 
+### Search profile by name
+GET {{publicURL}}/{{apiV}}/profilessearch
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+{
+	"value":"ге"
+}
+
 ### Create order
 POST {{publicURL}}/{{apiV}}/orders
 Content-Type: application/json
@@ -60,14 +70,10 @@ Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZ
 {
 	"object_id": 1,
 	"tech_tasks" : {
-		"task_1":{
-				"task_id": 1,
-				"task_value": "Не требуется"
-			},
-		"task_2": {
-				"task_id": 2,
-				"task_value": "Находится в работе под рабочим напряжением"
-			}
+		"tasks":[
+				{"task_id": 1},
+				{"task_id": 2},
+		]
 	},
 	"superviser_id": 2,
 	"staff_id": 3
@@ -142,3 +148,13 @@ GET {{publicURL}}/{{apiV}}/acts/superviser/1
 Content-Type: application/json
 Accept: application/json
 Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+### Search tech task
+GET {{publicURL}}/{{apiV}}/techtasksearch
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+{
+	"value":"не"
+}
