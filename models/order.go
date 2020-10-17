@@ -15,7 +15,7 @@ type Order struct {
 	StartAt        types.NullTime `json:"start_at" db:"start_at"`
 	EndAt          types.NullTime `json:"end_at" db:"end_at"`
 	StaffID        int            `json:"staff_id" db:"staff_id"`
-	StaffDes       *Profile       `json:"staff_desc"`
+	StaffDesc      *Profile       `json:"staff_desc"`
 	SuperviserSign string         `json:"superviser_sign" db:"superviser_sign"`
 	StaffSign      string         `json:"staff_sign" db:"staff_sign"`
 	Meta           types.NullMeta `json:"meta" db:"meta"`

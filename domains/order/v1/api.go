@@ -1,11 +1,13 @@
 package orderv1
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 	"github.com/sqsinformatique/rosseti-back/internal/httpsrv"
 	"github.com/sqsinformatique/rosseti-back/internal/logger"
 	"github.com/sqsinformatique/rosseti-back/models"
@@ -63,6 +65,168 @@ func (o *OrderV1) OrderGetHandler(ec echo.Context) (err error) {
 		return ec.JSON(
 			http.StatusNotFound,
 			httpsrv.NotFound(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		OrderDataResult{Body: orderData},
+	)
+}
+
+func (o *OrderV1) OrderSignSuperviserPostHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&o.log, ec)
+
+	orderID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	orderData, err := o.GetOrderByID(orderID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusNotFound,
+			httpsrv.NotFound(err),
+		)
+	}
+
+	if orderData.SuperviserSign != "" {
+		err = errors.Errorf("already signed by supervisor")
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusForbidden,
+			httpsrv.Forbidden(err),
+		)
+	}
+
+	dataForSign := make(map[string]interface{})
+	dataForSign["staff"] = orderData.StaffID
+	dataForSign["supervisor"] = orderData.SuperviserID
+	dataForSign["tech_tasks"] = orderData.TechTasks
+	dataForSign["created_at"] = orderData.CreatedAt
+
+	orderData.SuperviserSign, err = o.profileV1.SignDataByID(int64(orderData.SuperviserID), &dataForSign)
+	if err != nil {
+		hndlLog.Err(err).Msgf("FAILED SIGN BY Supervisor, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+
+	jsonObject, err := json.Marshal(orderData)
+	if err != nil {
+		hndlLog.Err(err).Msgf("marshal, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+
+	orderData, err = o.UpdateOrderByID(orderID, &jsonObject)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", orderID, string(jsonObject))
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		OrderDataResult{Body: orderData},
+	)
+}
+
+func (o *OrderV1) OrderSignStaffPostHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&o.log, ec)
+
+	orderID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	orderData, err := o.GetOrderByID(orderID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusNotFound,
+			httpsrv.NotFound(err),
+		)
+	}
+
+	if orderData.SuperviserSign == "" {
+		err = errors.Errorf("not signed by supervisor")
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusForbidden,
+			httpsrv.Forbidden(err),
+		)
+	}
+
+	if orderData.StaffSign != "" {
+		err = errors.Errorf("already signed by staff")
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusForbidden,
+			httpsrv.Forbidden(err),
+		)
+	}
+
+	dataForSign := make(map[string]interface{})
+	dataForSign["staff"] = orderData.StaffID
+	dataForSign["supervisor"] = orderData.SuperviserID
+	dataForSign["tech_tasks"] = orderData.TechTasks
+	dataForSign["created_at"] = orderData.CreatedAt
+
+	orderData.StaffSign, err = o.profileV1.SignDataByID(int64(orderData.StaffID), &dataForSign)
+	if err != nil {
+		hndlLog.Err(err).Msgf("FAILED SIGN BY Supervisor, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+
+	jsonObject, err := json.Marshal(orderData)
+	if err != nil {
+		hndlLog.Err(err).Msgf("marshal, id %d", orderID)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+
+	orderData, err = o.UpdateOrderByID(orderID, &jsonObject)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", orderID, string(jsonObject))
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
 		)
 	}
 

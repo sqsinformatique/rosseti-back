@@ -60,12 +60,12 @@ func MarshalSign(key *rsa.PrivateKey) (privateKey, publicKey string) {
 }
 
 func UnmarshalPrivate(privateKey string) (*rsa.PrivateKey, error) {
-	uDec, _ := base64.URLEncoding.DecodeString(privateKey)
+	uDec, _ := base64.StdEncoding.DecodeString(privateKey)
 	return x509.ParsePKCS1PrivateKey(uDec)
 }
 
 func UnmarshalPublic(publicKey string) (*rsa.PublicKey, error) {
-	uDec, _ := base64.URLEncoding.DecodeString(publicKey)
+	uDec, _ := base64.StdEncoding.DecodeString(publicKey)
 	return x509.ParsePKCS1PublicKey(uDec)
 }
 
@@ -88,5 +88,5 @@ func DataSign(data interface{}, key *rsa.PrivateKey) (string, error) {
 		return "", err
 	}
 
-	return string(signature), nil
+	return base64.StdEncoding.EncodeToString(signature), nil
 }

@@ -63,7 +63,7 @@ func (o *ORM) Update(target string, writeData Inserter) (interface{}, error) {
 	}
 
 	_, err := conn.NamedExec(
-		conn.Rebind(utils.JoinStrings(" ", "UPDATE"+o.schema+"."+target+"SET", strings.Join(query, ", "),
+		conn.Rebind(utils.JoinStrings(" ", "UPDATE "+o.schema+"."+target+" SET ", strings.Join(query, ", "),
 			"WHERE id=:id")),
 		writeData)
 	if err != nil {

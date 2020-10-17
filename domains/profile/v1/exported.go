@@ -2,6 +2,7 @@ package profilev1
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -53,7 +54,7 @@ func (o *ProfileV1) SignDataByID(id int64, data interface{}) (string, error) {
 
 	key, err := crypto.UnmarshalPrivate(profile.PrivateKey)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed unmarhal privatekey: %w", err)
 	}
 
 	return crypto.DataSign(data, key)

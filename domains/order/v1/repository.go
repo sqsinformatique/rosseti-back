@@ -40,7 +40,7 @@ func (o *OrderV1) GetOrderByID(id int64) (data *models.Order, err error) {
 		return nil, err
 	}
 	o.log.Debug().Msgf("staff %+v", staff)
-	data.StaffDes = staff
+	data.StaffDesc = staff
 
 	superviser, err := o.profileV1.GetProfileByID(int64(data.SuperviserID))
 	if err != nil {
@@ -101,7 +101,7 @@ func (o *OrderV1) GetOrdersByUserID(id int64) (data *ArrayOfOrderData, err error
 			return nil, err
 		}
 		o.log.Debug().Msgf("staff %+v", staff)
-		item.StaffDes = staff
+		item.StaffDesc = staff
 
 		superviser, err := o.profileV1.GetProfileByID(int64(item.SuperviserID))
 		if err != nil {

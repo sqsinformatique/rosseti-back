@@ -1,6 +1,6 @@
-@baseURL = http://localhost
-@publicport = 9000
-@adminport = 9100
+@baseURL = https://sqsinformatique-rosseti-back.ngrok.io
+@publicport = 
+@adminport = 
 @publicURL = {{baseURL}}:{{publicport}}
 @adminURL = {{baseURL}}:{{adminport}}
 @apiV = api/v1
@@ -39,7 +39,7 @@ Accept: application/json
 Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
 
 {
-	"id": 1,
+	"id": 10,
 	"user_first_name": "Иван",
 	"user_middle_name": "Васильевич",
 	"user_last_name": "Грозный",
@@ -87,6 +87,18 @@ Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZ
 
 ### Get orders for user
 GET {{publicURL}}/{{apiV}}/orders/user/3
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+### Sign order by supervisor
+POST {{publicURL}}/{{apiV}}/orders/1/signsupervisor
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+### Sign order by staff
+POST {{publicURL}}/{{apiV}}/orders/1/signstaff
 Content-Type: application/json
 Accept: application/json
 Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
