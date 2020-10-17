@@ -39,6 +39,36 @@ func (o *ObjectsDetailV1) GetObjectsDetailByID(objectID, elementID int64) (data 
 	return
 }
 
+func (o *ObjectsDetailV1) SearchObjectsDetailByName(value *models.Search) (data *ArrayOfObjectsDetailData, err error) {
+	conn := *o.db
+	if o.db == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	objectID := int64(value.ExtFilter["object_id"].(float64))
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.objects_details where object_id=$1 and element_name ilike $2"), objectID, value.Value+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	data = &ArrayOfObjectsDetailData{}
+
+	for rows.Next() {
+		var item models.ObjectsDetail
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		*data = append(*data, item)
+	}
+
+	return data, nil
+}
+
 func mergeObjectsDetailData(oldData *models.ObjectsDetail, patch *[]byte) (newData *models.ObjectsDetail, err error) {
 	objectID := oldData.ObjectID
 	elementID := oldData.ElementID

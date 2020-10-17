@@ -37,6 +37,7 @@ func NewObjectsDetailV1(ctx *context.Context, orm *orm.ORM, userV1 *userv1.UserV
 
 	p.publicV1.POST("/objectsdetail", p.userV1.Introspect(p.ObjectsDetailPostHandler, types.Electrician))
 	p.publicV1.GET("/objectsdetail/:id", p.userV1.Introspect(p.ObjectsDetailGetHandler, types.Electrician))
+	p.publicV1.GET("/objectsdetailsearch", p.userV1.Introspect(p.ObjectsDetailSearchGetHandler, types.Electrician))
 	p.publicV1.PUT("/objectsdetail/:id", p.userV1.Introspect(p.ObjectsDetailPutHandler, types.Electrician))
 	p.publicV1.DELETE("/objectsdetail/:id", p.userV1.Introspect(p.ObjectsDetailDeleteHandler, types.Admin))
 

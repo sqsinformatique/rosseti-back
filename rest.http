@@ -158,3 +158,16 @@ Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZ
 {
 	"value":"не"
 }
+
+### Search tech task
+GET {{publicURL}}/{{apiV}}/objectsdetailsearch
+Content-Type: application/json
+Accept: application/json
+Cookie: rosseti-session=r27yuRpykNogv7zcqLYw2kUthBqm77qZ5rJZwZjrG7EzVyiI8G0lP9nZyvgaF2c46Z9xGpEHpALJtENTEA9PPd3HhNo9HT5WYCs4;
+
+{
+	"value": "про",
+	"ext_filter": {
+		"object_id": 1
+	}
+}

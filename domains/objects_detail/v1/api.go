@@ -82,6 +82,38 @@ func (o *ObjectsDetailV1) ObjectsDetailGetHandler(ec echo.Context) (err error) {
 	)
 }
 
+func (o *ObjectsDetailV1) ObjectsDetailSearchGetHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&o.log, ec)
+
+	var value models.Search
+
+	err = ec.Bind(&value)
+	if err != nil {
+		hndlLog.Err(err).Msg("BAD REQUEST")
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	objectsDetailData, err := o.SearchObjectsDetailByName(&value)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get techTaskData %+v", &value)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ObjectsDetailDataResult{Body: objectsDetailData},
+	)
+}
+
 func (o *ObjectsDetailV1) ObjectsDetailPutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
