@@ -21,7 +21,7 @@ func (o *ObjectsDetailV1) CreateObjectsDetail(request *models.ObjectsDetail) (*m
 	return result.(*models.ObjectsDetail), nil
 }
 
-func (o *ObjectsDetailV1) GetObjectsDetailByID(id int64) (data *models.ObjectsDetail, err error) {
+func (o *ObjectsDetailV1) GetObjectsDetailByID(objectID, elementID int64) (data *models.ObjectsDetail, err error) {
 	data = &models.ObjectsDetail{}
 
 	conn := *o.db
@@ -29,7 +29,7 @@ func (o *ObjectsDetailV1) GetObjectsDetailByID(id int64) (data *models.ObjectsDe
 		return nil, db.ErrDBConnNotEstablished
 	}
 
-	err = conn.Get(data, "select * from production.objects_details where id=$1", id)
+	err = conn.Get(data, "select * from production.objects_details where object_id=$1 and element_id=$2", objectID, elementID)
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +68,8 @@ func mergeObjectsDetailData(oldData *models.ObjectsDetail, patch *[]byte) (newDa
 	return newData, nil
 }
 
-func (u *ObjectsDetailV1) UpdateObjectsDetailByID(id int64, patch *[]byte) (writeData *models.ObjectsDetail, err error) {
-	data, err := u.GetObjectsDetailByID(id)
+func (u *ObjectsDetailV1) UpdateObjectsDetailByID(objectID, elementID int64, patch *[]byte) (writeData *models.ObjectsDetail, err error) {
+	data, err := u.GetObjectsDetailByID(objectID, elementID)
 	if err != nil {
 		return
 	}
@@ -91,8 +91,8 @@ func (u *ObjectsDetailV1) UpdateObjectsDetailByID(id int64, patch *[]byte) (writ
 	return writeData, err
 }
 
-func (u *ObjectsDetailV1) SoftDeleteObjectsDetailByID(id int64) (err error) {
-	data, err := u.GetObjectsDetailByID(id)
+func (u *ObjectsDetailV1) SoftDeleteObjectsDetailByID(objectID, elementID int64) (err error) {
+	data, err := u.GetObjectsDetailByID(objectID, elementID)
 	if err != nil {
 		return
 	}
@@ -110,18 +110,18 @@ func (u *ObjectsDetailV1) SoftDeleteObjectsDetailByID(id int64) (err error) {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = u.orm.Update("objectsdetails", data)
+	_, err = u.orm.Update("objects_details", data)
 
 	return
 }
 
-func (u *ObjectsDetailV1) HardDeleteObjectsDetailByID(id int64) (err error) {
+func (u *ObjectsDetailV1) HardDeleteObjectsDetailByID(objectID, elementID int64) (err error) {
 	conn := *u.db
 	if conn == nil {
 		return db.ErrDBConnNotEstablished
 	}
 
-	_, err = conn.Exec(conn.Rebind("DELETE FROM production.objects_details WHERE id=$1"), id)
+	_, err = conn.Exec(conn.Rebind("DELETE FROM production.objects_details WHERE object_id=$1 and element_id=$2"), objectID, elementID)
 
 	if err != nil {
 		return err

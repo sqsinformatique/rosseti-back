@@ -34,15 +34,53 @@ func (a *ActV1) actGetHandler(ec echo.Context) (err error) {
 	)
 }
 
-func (a *ActV1) actsByUserIDGetHandler(ec echo.Context) (err error) {
+func (a *ActV1) actsByStaffIDGetHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&a.log, ec)
 
-	userID := ec.Param("id")
-
-	actData, err := a.GetActsByUserID(userID)
+	userID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
 	if err != nil {
-		hndlLog.Err(err).Msgf("failed to get act %s", userID)
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	actData, err := a.GetActsByStaffID(userID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get act %d", userID)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ActDataResult{Body: actData},
+	)
+}
+
+func (a *ActV1) actsBySuperviserIDGetHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&a.log, ec)
+
+	userID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	actData, err := a.GetActsBySuperviserID(userID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get act %d", userID)
 
 		return ec.JSON(
 			http.StatusBadRequest,

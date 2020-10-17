@@ -46,7 +46,7 @@ func (o *ObjectsDetailV1) ObjectsDetailGetHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	objectsdetailID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	objectID, err := strconv.ParseInt(ec.Param("objectid"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -56,9 +56,19 @@ func (o *ObjectsDetailV1) ObjectsDetailGetHandler(ec echo.Context) (err error) {
 		)
 	}
 
-	objectsdetailData, err := o.GetObjectsDetailByID(objectsdetailID)
+	detailID, err := strconv.ParseInt(ec.Param("detailid"), 10, 64)
 	if err != nil {
-		hndlLog.Err(err).Msgf("NOT FOUND, id %d", objectsdetailID)
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	objectsdetailData, err := o.GetObjectsDetailByID(objectID, detailID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("NOT FOUND, id %d", objectID)
 
 		return ec.JSON(
 			http.StatusNotFound,
@@ -76,7 +86,17 @@ func (o *ObjectsDetailV1) ObjectsDetailPutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	objectsdetailID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	objectID, err := strconv.ParseInt(ec.Param("objectid"), 10, 64)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	detailID, err := strconv.ParseInt(ec.Param("detailid"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -93,7 +113,7 @@ func (o *ObjectsDetailV1) ObjectsDetailPutHandler(ec echo.Context) (err error) {
 		ec.Request().Body.Close()
 
 		if err != nil {
-			hndlLog.Err(err).Msgf("ORDER DATA NOT UPDATED, id %d", objectsdetailID)
+			hndlLog.Err(err).Msgf("ORDER DATA NOT UPDATED, id %d", objectID)
 
 			return ec.JSON(
 				http.StatusBadRequest,
@@ -102,9 +122,9 @@ func (o *ObjectsDetailV1) ObjectsDetailPutHandler(ec echo.Context) (err error) {
 		}
 	}
 
-	objectsdetailData, err := o.UpdateObjectsDetailByID(objectsdetailID, &bodyBytes)
+	objectsdetailData, err := o.UpdateObjectsDetailByID(objectID, detailID, &bodyBytes)
 	if err != nil {
-		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", objectsdetailID, string(bodyBytes))
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %d, body %s", objectID, string(bodyBytes))
 
 		return ec.JSON(
 			http.StatusConflict,
@@ -122,7 +142,17 @@ func (o *ObjectsDetailV1) ObjectsDetailDeleteHandler(ec echo.Context) (err error
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)
 
-	userID, err := strconv.ParseInt(ec.Param("id"), 10, 64)
+	objectID, err := strconv.ParseInt(ec.Param("objectid"), 10, 64)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	detailID, err := strconv.ParseInt(ec.Param("detailid"), 10, 64)
 	if err != nil {
 		hndlLog.Err(err).Msgf("BAD REQUEST, id %s", ec.Param("id"))
 
@@ -134,13 +164,13 @@ func (o *ObjectsDetailV1) ObjectsDetailDeleteHandler(ec echo.Context) (err error
 
 	hard := ec.QueryParam("hard")
 	if hard == "true" {
-		err = o.HardDeleteObjectsDetailByID(userID)
+		err = o.HardDeleteObjectsDetailByID(objectID, detailID)
 	} else {
-		err = o.SoftDeleteObjectsDetailByID(userID)
+		err = o.SoftDeleteObjectsDetailByID(objectID, detailID)
 	}
 
 	if err != nil {
-		hndlLog.Err(err).Msgf("DATA NOT DELETED, id %d", userID)
+		hndlLog.Err(err).Msgf("DATA NOT DELETED, id %d", objectID)
 
 		return ec.JSON(
 			http.StatusConflict,

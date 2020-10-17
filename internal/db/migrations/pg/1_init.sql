@@ -64,12 +64,12 @@ CREATE TABLE IF NOT EXISTS production.acts (
     superviser_id INTEGER NOT NULL,
     object_id INTEGER NOT NULL,
     review_id INTEGER NOT NULL,
-    finished boolean,
+    finished boolean DEFAULT false,
     end_at timestamp with time zone,
     staff_sign character varying(2048) DEFAULT '', 
     superviser_sign character varying(2048) DEFAULT '',
-    approved boolean,
-    reverted boolean,
+    approved boolean DEFAULT false,
+    reverted boolean DEFAULT false,
     meta jsonb,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS production.acts_details (
     act_id INTEGER NOT NULL,
     element_id INTEGER NOT NULL,
     defects jsonb,
-    category INTEGER,
+    category INTEGER DEFAULT 0,
     repaired_at timestamp with time zone,
     images jsonb,
     meta jsonb,
@@ -116,9 +116,9 @@ CREATE TABLE IF NOT EXISTS production.acts_details (
 
 INSERT INTO production.acts_details (act_id, element_id, defects) VALUES (1, 7, '{"defects": [{"defect_id": 1}]}');
 INSERT INTO production.acts_details (act_id, element_id, defects) VALUES (1, 39, '{"defects": [{"defect_id": 2}]}');
-INSERT INTO production.acts_details (act_id, element_id, defects) VALUES (15, 7, '{"defects": [{"defect_id": 3}]}');
-INSERT INTO production.acts_details (act_id, element_id, defects) VALUES (20, 7, '{"defects": [{"defect_id": 4}]}');
-INSERT INTO production.acts_details (act_id, element_id, defects) VALUES (50, 7, '{"defects": [{"defect_id": 5}]}');
+INSERT INTO production.acts_details (act_id, element_id, defects) VALUES (1, 15, '{"defects": [{"defect_id": 3}]}');
+INSERT INTO production.acts_details (act_id, element_id, defects) VALUES (1, 20, '{"defects": [{"defect_id": 4}]}');
+INSERT INTO production.acts_details (act_id, element_id, defects) VALUES (1, 50, '{"defects": [{"defect_id": 5}]}');
 
 CREATE TABLE IF NOT EXISTS production.defects (
     id serial PRIMARY KEY,

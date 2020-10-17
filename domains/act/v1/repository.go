@@ -117,6 +117,20 @@ func (a *ActV1) GetActByID(id string) (data *models.Act, err error) {
 
 	data.ObjectDecs = object
 
+	review, err := a.reviewV1.GetReviewByID(int64(data.ReviewID))
+	if err != nil {
+		return nil, fmt.Errorf("failed gets review: %w", err)
+	}
+
+	data.ReviewDesc = review
+
+	actsDetail, err := a.actsdetailV1.GetAllActsDetailByID(int64(data.ID), int64(data.ObjectID))
+	if err != nil {
+		return nil, fmt.Errorf("failed gets actsDetail: %w", err)
+	}
+
+	data.ActDetailDesc = actsDetail
+
 	return data, nil
 }
 
@@ -142,14 +156,169 @@ func (a *ActV1) GetActsByDate(timeStart, timeEnd types.NullTime) (data *ArrayOfO
 			return nil, err
 		}
 
+		staff, err := a.profilev1.GetProfileByID(int64(item.StaffID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets staff: %w", err)
+		}
+
+		item.StaffDesc = staff
+
+		superviser, err := a.profilev1.GetProfileByID(int64(item.SuperviserID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets superviser: %w", err)
+		}
+
+		item.SuperviserDesc = superviser
+
+		object, err := a.objectV1.GetObjectByID(int64(item.ObjectID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets object: %w", err)
+		}
+
+		item.ObjectDecs = object
+
+		review, err := a.reviewV1.GetReviewByID(int64(item.ReviewID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets review: %w", err)
+		}
+
+		item.ReviewDesc = review
+
+		actsDetail, err := a.actsdetailV1.GetAllActsDetailByID(int64(item.ID), int64(item.ObjectID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets actsDetail: %w", err)
+		}
+
+		item.ActDetailDesc = actsDetail
+
 		*data = append(*data, item)
 	}
 
 	return data, nil
 }
 
-func (a *ActV1) GetActsByUserID(id string) (data *ArrayOfOActData, err error) {
+func (a *ActV1) GetActsByStaffID(id int64) (data *ArrayOfOActData, err error) {
 	data = &ArrayOfOActData{}
+
+	conn := *a.db
+	if conn == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.acts where staff_id=$1"), id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item models.Act
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		staff, err := a.profilev1.GetProfileByID(int64(item.StaffID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets staff: %w", err)
+		}
+
+		item.StaffDesc = staff
+
+		superviser, err := a.profilev1.GetProfileByID(int64(item.SuperviserID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets superviser: %w", err)
+		}
+
+		item.SuperviserDesc = superviser
+
+		object, err := a.objectV1.GetObjectByID(int64(item.ObjectID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets object: %w", err)
+		}
+
+		item.ObjectDecs = object
+
+		review, err := a.reviewV1.GetReviewByID(int64(item.ReviewID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets review: %w", err)
+		}
+
+		item.ReviewDesc = review
+
+		actsDetail, err := a.actsdetailV1.GetAllActsDetailByID(int64(item.ID), int64(item.ObjectID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets actsDetail: %w", err)
+		}
+
+		item.ActDetailDesc = actsDetail
+
+		*data = append(*data, item)
+	}
+
+	return data, nil
+}
+
+func (a *ActV1) GetActsBySuperviserID(id int64) (data *ArrayOfOActData, err error) {
+	data = &ArrayOfOActData{}
+
+	conn := *a.db
+	if conn == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.acts where superviser_id=$1"), id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item models.Act
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		staff, err := a.profilev1.GetProfileByID(int64(item.StaffID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets staff: %w", err)
+		}
+
+		item.StaffDesc = staff
+
+		superviser, err := a.profilev1.GetProfileByID(int64(item.SuperviserID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets superviser: %w", err)
+		}
+
+		item.SuperviserDesc = superviser
+
+		object, err := a.objectV1.GetObjectByID(int64(item.ObjectID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets object: %w", err)
+		}
+
+		item.ObjectDecs = object
+
+		review, err := a.reviewV1.GetReviewByID(int64(item.ReviewID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets review: %w", err)
+		}
+
+		item.ReviewDesc = review
+
+		actsDetail, err := a.actsdetailV1.GetAllActsDetailByID(int64(item.ID), int64(item.ObjectID))
+		if err != nil {
+			return nil, fmt.Errorf("failed gets actsDetail: %w", err)
+		}
+
+		item.ActDetailDesc = actsDetail
+
+		*data = append(*data, item)
+	}
 
 	return data, nil
 }

@@ -74,8 +74,8 @@ func (o *OrderV1) GetOrderByID(id int64) (data *models.Order, err error) {
 	return
 }
 
-func (u *OrderV1) GetOrdersByUserID(id int64) (data *ArrayOfOrderData, err error) {
-	conn := *u.db
+func (o *OrderV1) GetOrdersByUserID(id int64) (data *ArrayOfOrderData, err error) {
+	conn := *o.db
 	if conn == nil {
 		return nil, db.ErrDBConnNotEstablished
 	}
@@ -95,6 +95,42 @@ func (u *OrderV1) GetOrdersByUserID(id int64) (data *ArrayOfOrderData, err error
 		if err != nil {
 			return nil, err
 		}
+
+		staff, err := o.profileV1.GetProfileByID(int64(item.StaffID))
+		if err != nil {
+			return nil, err
+		}
+		o.log.Debug().Msgf("staff %+v", staff)
+		item.StaffDes = staff
+
+		superviser, err := o.profileV1.GetProfileByID(int64(item.SuperviserID))
+		if err != nil {
+			return nil, err
+		}
+
+		item.SuperviserDesc = superviser
+
+		object, err := o.objectV1.GetObjectByID(int64(item.ObjectID))
+		if err != nil {
+			return nil, err
+		}
+
+		item.ObjectDesc = object
+
+		var techtasks []*models.TechTask
+		for _, v := range item.TechTasks.Map {
+			for _, w := range v.([]interface{}) {
+				z := w.(map[string]interface{})
+				task, err := o.techtaskV1.GetTechTaskByID(int64(z["task_id"].(float64)))
+				if err != nil {
+					return nil, err
+				}
+
+				techtasks = append(techtasks, task)
+			}
+		}
+
+		item.TechTasksDesc = techtasks
 
 		*data = append(*data, item)
 	}

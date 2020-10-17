@@ -7,9 +7,13 @@ import (
 	"syscall"
 
 	actv1 "github.com/sqsinformatique/rosseti-back/domains/act/v1"
+	actsdetailv1 "github.com/sqsinformatique/rosseti-back/domains/acts_detail/v1"
+	defectv1 "github.com/sqsinformatique/rosseti-back/domains/defect/v1"
 	objectv1 "github.com/sqsinformatique/rosseti-back/domains/object/v1"
+	objectsdetailv1 "github.com/sqsinformatique/rosseti-back/domains/objects_detail/v1"
 	orderv1 "github.com/sqsinformatique/rosseti-back/domains/order/v1"
 	profilev1 "github.com/sqsinformatique/rosseti-back/domains/profile/v1"
+	reviewv1 "github.com/sqsinformatique/rosseti-back/domains/review/v1"
 	sessionv1 "github.com/sqsinformatique/rosseti-back/domains/session/v1"
 	techtaskv1 "github.com/sqsinformatique/rosseti-back/domains/tech_task/v1"
 	userv1 "github.com/sqsinformatique/rosseti-back/domains/user/v1"
@@ -99,7 +103,27 @@ func serveHandler(cmd *cobra.Command, args []string) {
 		log.Fatal().Err(err).Msg("Failed create OrderV1")
 	}
 
-	_, err = actv1.NewActV1(ctx, ProfileV1, ORM, UserV1, ObjectV1)
+	ReviewV1, err := reviewv1.NewReviewV1(ctx, ORM, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create ReviewV1")
+	}
+
+	DefectsV1, err := defectv1.NewDefectV1(ctx, ORM, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create DefectsV1")
+	}
+
+	ObjectsDetailV1, err := objectsdetailv1.NewObjectsDetailV1(ctx, ORM, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create ObjectsDetailV1")
+	}
+
+	ActsDetailV1, err := actsdetailv1.NewActsDetailV1(ctx, ORM, UserV1, DefectsV1, ObjectsDetailV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create ActsDetailV1")
+	}
+
+	_, err = actv1.NewActV1(ctx, ProfileV1, ORM, UserV1, ObjectV1, ReviewV1, ActsDetailV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create ActV1")
 	}
