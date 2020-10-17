@@ -37,6 +37,7 @@ func NewObjectV1(ctx *context.Context, orm *orm.ORM, userV1 *userv1.UserV1) (*Ob
 
 	o.publicV1.POST("/objects", o.userV1.Introspect(o.ObjectPostHandler, types.Admin))
 	o.publicV1.GET("/objects/:id", o.userV1.Introspect(o.ObjectGetHandler, types.Admin))
+	o.publicV1.GET("/objectssearch", o.userV1.Introspect(o.ObjecSearchGetHandler, types.Admin))
 	o.publicV1.PUT("/objects/:id", o.userV1.Introspect(o.ObjectPutHandler, types.Admin))
 	o.publicV1.DELETE("/objects/:id", o.userV1.Introspect(o.ObjectDeleteHandler, types.Admin))
 

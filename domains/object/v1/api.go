@@ -72,6 +72,38 @@ func (o *ObjectV1) ObjectGetHandler(ec echo.Context) (err error) {
 	)
 }
 
+func (o *ObjectV1) ObjecSearchGetHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&o.log, ec)
+
+	var value models.Search
+
+	err = ec.Bind(&value)
+	if err != nil {
+		hndlLog.Err(err).Msg("BAD REQUEST")
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	actData, err := o.SearchObjectByName(&value)
+	if err != nil {
+		hndlLog.Err(err).Msgf("failed to get act %+v", &value)
+
+		return ec.JSON(
+			http.StatusBadRequest,
+			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ObjectDataResult{Body: actData},
+	)
+}
+
 func (o *ObjectV1) ObjectPutHandler(ec echo.Context) (err error) {
 	// Main code of handler
 	hndlLog := logger.HandlerLogger(&o.log, ec)

@@ -39,6 +39,34 @@ func (o *ObjectV1) GetObjectByID(id int64) (data *models.Object, err error) {
 	return
 }
 
+func (o *ObjectV1) SearchObjectByName(value *models.Search) (data *ArrayOfObjectData, err error) {
+	conn := *o.db
+	if o.db == nil {
+		return nil, db.ErrDBConnNotEstablished
+	}
+
+	rows, err := conn.Queryx(conn.Rebind("select * from production.objects where object_name like $1"), value.Value+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	data = &ArrayOfObjectData{}
+
+	for rows.Next() {
+		var item models.Object
+
+		err = rows.StructScan(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		*data = append(*data, item)
+	}
+
+	return data, nil
+}
+
 func mergeObjectData(oldData *models.Object, patch *[]byte) (newData *models.Object, err error) {
 	id := oldData.ID
 
