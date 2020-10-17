@@ -1,0 +1,21 @@
+.row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+
+  &_between {
+    justify-content: space-between;
+  }
+
+  &_around {
+    justify-content: space-around;
+  }
+
+  &_center {
+    justify-content: center;
+  }
+
+  &_nowrap {
+    flex-wrap: nowrap;
+  }
+}
