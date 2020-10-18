@@ -68,7 +68,9 @@ CREATE TABLE IF NOT EXISTS production.acts (
     finished boolean DEFAULT false,
     end_at timestamp with time zone,
     staff_sign character varying(2048) DEFAULT '', 
+    staff_sign_at timestamp with time zone,
     superviser_sign character varying(2048) DEFAULT '',
+    superviser_sign_at timestamp with time zone,
     approved boolean DEFAULT false,
     reverted boolean DEFAULT false,
     meta jsonb,
@@ -182,70 +184,83 @@ CREATE TABLE IF NOT EXISTS production.objects (
 
 INSERT INTO production.objects (object_address, object_name) VALUES ('', 'ВЛ 10кВ ТП №265-ТП №240');
 
-CREATE TABLE IF NOT EXISTS production.objects_details (
-    object_id INTEGER NOT NULL,
-    element_id INTEGER NOT NULL,
-    element_name character varying(2048) DEFAULT '',
-    element_type INTEGER NOT NULL,
+CREATE TABLE production.equipments (
+    id serial PRIMARY KEY,
+    description character varying(255) DEFAULT '',
     meta jsonb,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
     deleted_at timestamp with time zone
 );
 
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 1, 'Опора №1', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 2, 'Опора №2', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 3, 'Опора №3', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 4, 'Опора №4', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 5, 'Опора №5', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 6, 'Опора №6', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 7, 'Опора №7', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 8, 'Опора №8', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 9, 'Опора №9', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 10, 'Опора №10', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 11, 'Опора №11', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 12, 'Опора №12', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 13, 'Опора №13', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 14, 'Опора №14', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 15, 'Опора №15', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 16, 'Опора №16', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 17, 'Опора №17', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 18, 'Опора №18', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 19, 'Опора №19', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 20, 'Опора №20', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 21, 'Опора №21', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 22, 'Опора №22', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 23, 'Опора №23', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 24, 'Опора №24', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 25, 'Опора №25', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 27, 'Опора №26', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 27, 'Опора №27', 1);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 29, 'Пролёт: Опора №1 - Опора №2', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 30, 'Пролёт: Опора №2 - Опора №3', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 31, 'Пролёт: Опора №3 - Опора №4', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 32, 'Пролёт: Опора №4 - Опора №5', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 33, 'Пролёт: Опора №5 - Опора №6', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 34, 'Пролёт: Опора №6 - Опора №7', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 35, 'Пролёт: Опора №7 - Опора №8', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 36, 'Пролёт: Опора №8 - Опора №9', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 37, 'Пролёт: Опора №9 - Опора №10', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 38, 'Пролёт: Опора №10 - Опора №11', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 39, 'Пролёт: Опора №11 - Опора №12', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 40, 'Пролёт: Опора №12 - Опора №13', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 41, 'Пролёт: Опора №13 - Опора №14', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 42, 'Пролёт: Опора №14 - Опора №15', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 43, 'Пролёт: Опора №15 - Опора №16', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 44, 'Пролёт: Опора №16 - Опора №17', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 45, 'Пролёт: Опора №17 - Опора №18', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 46, 'Пролёт: Опора №18 - Опора №19', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 47, 'Пролёт: Опора №19 - Опора №20', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 48, 'Пролёт: Опора №20 - Опора №21', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 49, 'Пролёт: Опора №21 - Опора №22', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 50, 'Пролёт: Опора №22 - Опора №23', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 51, 'Пролёт: Опора №23 - Опора №24', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 52, 'Пролёт: Опора №24 - Опора №25', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 53, 'Пролёт: Опора №25 - Опора №26', 2);
-INSERT INTO production.objects_details (object_id, element_id, element_name, element_type) VALUES (1, 54, 'Пролёт: Опора №26 - Опора №27', 2);
+INSERT INTO production.equipments (description) VALUES ('Опора П10-1Д');
+INSERT INTO production.equipments (description) VALUES ('Провод 3хА 95');
+
+CREATE TABLE IF NOT EXISTS production.objects_details (
+    object_id INTEGER NOT NULL,
+    element_id INTEGER NOT NULL,
+    element_name character varying(2048) DEFAULT '',
+    element_type INTEGER NOT NULL,
+    element_equipment INTEGER NOT NULL,
+    meta jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    deleted_at timestamp with time zone
+);
+
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 1, 'Опора №1', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 2, 'Опора №2', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 3, 'Опора №3', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 4, 'Опора №4', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 5, 'Опора №5', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 6, 'Опора №6', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 7, 'Опора №7', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 8, 'Опора №8', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 9, 'Опора №9', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 10, 'Опора №10', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 11, 'Опора №11', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 12, 'Опора №12', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 13, 'Опора №13', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 14, 'Опора №14', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 15, 'Опора №15', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 16, 'Опора №16', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 17, 'Опора №17', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 18, 'Опора №18', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 19, 'Опора №19', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 20, 'Опора №20', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 21, 'Опора №21', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 22, 'Опора №22', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 23, 'Опора №23', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 24, 'Опора №24', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 25, 'Опора №25', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 27, 'Опора №26', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 27, 'Опора №27', 1, 1);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 29, 'Пролёт: Опора №1 - Опора №2', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 30, 'Пролёт: Опора №2 - Опора №3', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 31, 'Пролёт: Опора №3 - Опора №4', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 32, 'Пролёт: Опора №4 - Опора №5', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 33, 'Пролёт: Опора №5 - Опора №6', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 34, 'Пролёт: Опора №6 - Опора №7', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 35, 'Пролёт: Опора №7 - Опора №8', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 36, 'Пролёт: Опора №8 - Опора №9', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 37, 'Пролёт: Опора №9 - Опора №10', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 38, 'Пролёт: Опора №10 - Опора №11', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 39, 'Пролёт: Опора №11 - Опора №12', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 40, 'Пролёт: Опора №12 - Опора №13', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 41, 'Пролёт: Опора №13 - Опора №14', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 42, 'Пролёт: Опора №14 - Опора №15', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 43, 'Пролёт: Опора №15 - Опора №16', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 44, 'Пролёт: Опора №16 - Опора №17', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 45, 'Пролёт: Опора №17 - Опора №18', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 46, 'Пролёт: Опора №18 - Опора №19', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 47, 'Пролёт: Опора №19 - Опора №20', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 48, 'Пролёт: Опора №20 - Опора №21', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 49, 'Пролёт: Опора №21 - Опора №22', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 50, 'Пролёт: Опора №22 - Опора №23', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 51, 'Пролёт: Опора №23 - Опора №24', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 52, 'Пролёт: Опора №24 - Опора №25', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 53, 'Пролёт: Опора №25 - Опора №26', 2, 2);
+INSERT INTO production.objects_details (object_id, element_id, element_name, element_type, element_equipment) VALUES (1, 54, 'Пролёт: Опора №26 - Опора №27', 2, 2);
 
 CREATE TABLE IF NOT EXISTS production.sessions (
     id character varying(255) PRIMARY KEY,

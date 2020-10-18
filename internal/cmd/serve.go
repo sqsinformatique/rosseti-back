@@ -10,6 +10,7 @@ import (
 	actsdetailv1 "github.com/sqsinformatique/rosseti-back/domains/acts_detail/v1"
 	categoryv1 "github.com/sqsinformatique/rosseti-back/domains/category/v1"
 	defectv1 "github.com/sqsinformatique/rosseti-back/domains/defect/v1"
+	elementequipmentv1 "github.com/sqsinformatique/rosseti-back/domains/element_equpment/v1"
 	journalv1 "github.com/sqsinformatique/rosseti-back/domains/journal/v1"
 	objectv1 "github.com/sqsinformatique/rosseti-back/domains/object/v1"
 	objectsdetailv1 "github.com/sqsinformatique/rosseti-back/domains/objects_detail/v1"
@@ -135,7 +136,17 @@ func serveHandler(cmd *cobra.Command, args []string) {
 		log.Fatal().Err(err).Msg("Failed create ActV1")
 	}
 
-	_, err = journalv1.NewJournalV1(ctx, ORM, UserV1, ObjectV1, ProfileV1, ActV1)
+	CategoryV1, err := categoryv1.NewCategoryV1(ctx, ORM, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create ActV1")
+	}
+
+	ElementEquipmentV1, err := elementequipmentv1.NewElementEquipmentV1(ctx, ORM, UserV1)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create ElementEquipmentV1")
+	}
+
+	_, err = journalv1.NewJournalV1(ctx, ORM, UserV1, ObjectV1, ProfileV1, ActV1, CategoryV1, ElementEquipmentV1)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create JournalV1")
 	}
