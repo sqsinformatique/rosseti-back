@@ -132,11 +132,11 @@ CREATE TABLE IF NOT EXISTS production.defects (
     deleted_at timestamp with time zone
 );
 
-INSERT INTO production.defects (element_type, description, category) VALUES (1, 2, 'Отсутствие диспетчерских названий');
-INSERT INTO production.defects (element_type, description, category) VALUES (2, 2, 'Наличие кустарника под проводами');
-INSERT INTO production.defects (element_type, description, category) VALUES (1, 1, 'Отсутствие плаката, знака безопасности');
-INSERT INTO production.defects (element_type, description, category) VALUES (1, 4, 'Наклон опоры');
-INSERT INTO production.defects (element_type, description, category) VALUES (2, 3, 'Негабарит провода');
+INSERT INTO production.defects (element_type, description, category) VALUES (1, 'Отсутствие диспетчерских названий', 2);
+INSERT INTO production.defects (element_type, description, category) VALUES (2, 'Наличие кустарника под проводами', 2);
+INSERT INTO production.defects (element_type, description, category) VALUES (1, 'Отсутствие плаката, знака безопасности', 1);
+INSERT INTO production.defects (element_type, description, category) VALUES (1, 'Наклон опоры', 4);
+INSERT INTO production.defects (element_type, description, category) VALUES (2, 'Негабарит провода', 3);
 
 CREATE TABLE IF NOT EXISTS production.orders (
     id serial PRIMARY KEY,
@@ -266,10 +266,10 @@ CREATE TABLE IF NOT EXISTS production.categorys (
     deleted_at timestamp with time zone
 );
 
-INSERT INTO production.categorys (rapair_period) VALUES (15, 'не критично');
-INSERT INTO production.categorys (rapair_period) VALUES (10, 'мало критично');
-INSERT INTO production.categorys (rapair_period) VALUES (5, 'критично');
-INSERT INTO production.categorys (rapair_period) VALUES (3, 'особо критично');
+INSERT INTO production.categorys (rapair_period, description) VALUES (15, 'не критично');
+INSERT INTO production.categorys (rapair_period, description) VALUES (10, 'мало критично');
+INSERT INTO production.categorys (rapair_period, description) VALUES (5, 'критично');
+INSERT INTO production.categorys (rapair_period, description) VALUES (3, 'особо критично');
 
 -- +goose Down
 DROP TABLE production.users;
