@@ -115,7 +115,7 @@ func (a *ActV1) GetActByID(id string) (data *models.Act, err error) {
 		return nil, fmt.Errorf("failed gets object: %w", err)
 	}
 
-	data.ObjectDecs = object
+	data.ObjectDesc = object
 
 	review, err := a.reviewV1.GetReviewByID(int64(data.ReviewID))
 	if err != nil {
@@ -175,7 +175,7 @@ func (a *ActV1) GetActsByDate(timeStart, timeEnd types.NullTime) (data *ArrayOfO
 			return nil, fmt.Errorf("failed gets object: %w", err)
 		}
 
-		item.ObjectDecs = object
+		item.ObjectDesc = object
 
 		review, err := a.reviewV1.GetReviewByID(int64(item.ReviewID))
 		if err != nil {
@@ -238,7 +238,7 @@ func (a *ActV1) GetActsByStaffID(id int64) (data *ArrayOfOActData, err error) {
 			return nil, fmt.Errorf("failed gets object: %w", err)
 		}
 
-		item.ObjectDecs = object
+		item.ObjectDesc = object
 
 		review, err := a.reviewV1.GetReviewByID(int64(item.ReviewID))
 		if err != nil {
@@ -301,7 +301,7 @@ func (a *ActV1) GetActsBySuperviserID(id int64) (data *ArrayOfOActData, err erro
 			return nil, fmt.Errorf("failed gets object: %w", err)
 		}
 
-		item.ObjectDecs = object
+		item.ObjectDesc = object
 
 		review, err := a.reviewV1.GetReviewByID(int64(item.ReviewID))
 		if err != nil {

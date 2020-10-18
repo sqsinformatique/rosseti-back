@@ -30,7 +30,7 @@ func (j *JournalV1) GetJournalData() (data *ArrayOfJournalData, err error) {
 
 			item.DefectsDesc = w.DefectsDesc
 			item.Category = w.Category
-			item.ObjectDesc = v.ObjectDecs
+			item.ObjectDesc = v.ObjectDesc
 			item.FindAd = v.StaffSignAt
 			item.ElementDesc = w.ElementDesc
 			item.ElementTypeDesk, err = j.elementequipmentV1.GetElementEquipmentByID(int64(w.ElementDesc.(*models.ObjectsDetail).ElementEqupment))

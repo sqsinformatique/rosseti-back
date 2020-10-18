@@ -67,6 +67,9 @@ func NewActV1(ctx *context.Context,
 	a.publicV1.POST("/acts/:actid/images", a.userV1.Introspect(a.actPostImagesHandler, types.Electrician))
 	a.publicV1.GET("/acts/:actid/images/:id", a.userV1.Introspect(a.actGetImageHandler, types.Electrician))
 	a.publicV1.DELETE("/acts/:actid", a.userV1.Introspect(a.ActDeleteHandler, types.Master))
+	a.publicV1.POST("/acts/:actid/signsupervisor", a.userV1.Introspect(a.ActSignSuperviserPostHandler, types.Master))
+	a.publicV1.POST("/acts/:actid/signstaff", a.userV1.Introspect(a.ActSignStaffPostHandler, types.Electrician))
+	a.publicV1.POST("/acts/:actid/revoke", a.userV1.Introspect(a.ActRevertedSuperviserPostHandler, types.Master))
 
 	return a, nil
 }

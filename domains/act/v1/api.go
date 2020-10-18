@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 	"github.com/sqsinformatique/rosseti-back/internal/httpsrv"
 	"github.com/sqsinformatique/rosseti-back/internal/logger"
 	"github.com/sqsinformatique/rosseti-back/models"
@@ -55,6 +57,177 @@ func (a *ActV1) actsByStaffIDGetHandler(ec echo.Context) (err error) {
 		return ec.JSON(
 			http.StatusBadRequest,
 			httpsrv.BadRequest(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ActDataResult{Body: actData},
+	)
+}
+
+func (a *ActV1) ActSignSuperviserPostHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&a.log, ec)
+
+	actID := ec.Param("actid")
+
+	actData, err := a.GetActByID(actID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("NOT FOUND, id %s", actID)
+
+		return ec.JSON(
+			http.StatusNotFound,
+			httpsrv.NotFound(err),
+		)
+	}
+
+	if actData.StaffSign == "" {
+		err = errors.Errorf("not signed by staff")
+		hndlLog.Err(err).Msgf("NOT FOUND, id %s", actID)
+
+		return ec.JSON(
+			http.StatusForbidden,
+			httpsrv.Forbidden(err),
+		)
+	}
+
+	if actData.SuperviserSign != "" {
+		err = errors.Errorf("already signed by supervisor")
+		hndlLog.Err(err).Msgf("NOT FOUND, id %s", actID)
+
+		return ec.JSON(
+			http.StatusForbidden,
+			httpsrv.Forbidden(err),
+		)
+	}
+
+	dataForSign := make(map[string]interface{})
+	dataForSign["staff"] = actData.StaffID
+	dataForSign["supervisor"] = actData.SuperviserID
+	dataForSign["id"] = actID
+	dataForSign["object_desc"] = actData.ObjectDesc
+	dataForSign["created_at"] = actData.CreatedAt
+
+	actData.SuperviserSign, err = a.profilev1.SignDataByID(int64(actData.SuperviserID), &dataForSign)
+	if err != nil {
+		hndlLog.Err(err).Msgf("FAILED SIGN BY Supervisor, id %s", actID)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+	actData.SuperviserSignAt.Time = time.Now()
+	actData.SuperviserSignAt.Valid = true
+	actData.Approved = true
+
+	actData, err = a.UpdateActByID(actID, actData)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s, body %+v", actID, actData)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ActDataResult{Body: actData},
+	)
+}
+
+func (a *ActV1) ActSignStaffPostHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&a.log, ec)
+
+	actID := ec.Param("id")
+
+	actData, err := a.GetActByID(actID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("NOT FOUND, id %s", actID)
+
+		return ec.JSON(
+			http.StatusNotFound,
+			httpsrv.NotFound(err),
+		)
+	}
+
+	if actData.StaffSign != "" {
+		err = errors.Errorf("already signed by staff")
+		hndlLog.Err(err).Msgf("NOT FOUND, id %s", actID)
+
+		return ec.JSON(
+			http.StatusForbidden,
+			httpsrv.Forbidden(err),
+		)
+	}
+
+	dataForSign := make(map[string]interface{})
+	dataForSign["staff"] = actData.StaffID
+	dataForSign["supervisor"] = actData.SuperviserID
+	dataForSign["id"] = actID
+	dataForSign["object_desc"] = actData.ObjectDesc
+	dataForSign["created_at"] = actData.CreatedAt
+
+	actData.StaffSign, err = a.profilev1.SignDataByID(int64(actData.StaffID), &dataForSign)
+	if err != nil {
+		hndlLog.Err(err).Msgf("FAILED SIGN BY Supervisor, id %s", actID)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+
+	actData.StaffSignAt.Time = time.Now()
+	actData.StaffSignAt.Valid = true
+	actData.Reverted = false
+
+	actData, err = a.UpdateActByID(actID, actData)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s, body %+v", actID, actData)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
+		)
+	}
+
+	return ec.JSON(
+		http.StatusOK,
+		ActDataResult{Body: actData},
+	)
+}
+
+func (a *ActV1) ActRevertedSuperviserPostHandler(ec echo.Context) (err error) {
+	// Main code of handler
+	hndlLog := logger.HandlerLogger(&a.log, ec)
+
+	actID := ec.Param("id")
+
+	actData, err := a.GetActByID(actID)
+	if err != nil {
+		hndlLog.Err(err).Msgf("NOT FOUND, id %s", actID)
+
+		return ec.JSON(
+			http.StatusNotFound,
+			httpsrv.NotFound(err),
+		)
+	}
+
+	actData.Reverted = true
+	actData.StaffSign = ""
+	actData.StaffSignAt.Valid = false
+
+	actData, err = a.UpdateActByID(actID, actData)
+	if err != nil {
+		hndlLog.Err(err).Msgf("BAD REQUEST, id %s, body %+v", actID, actData)
+
+		return ec.JSON(
+			http.StatusConflict,
+			httpsrv.NotUpdated(err),
 		)
 	}
 

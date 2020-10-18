@@ -47,7 +47,7 @@ func NewOrderV1(ctx *context.Context, orm *orm.ORM, userV1 *userv1.UserV1, objec
 
 	o.publicV1.POST("/orders", o.userV1.Introspect(o.OrderPostHandler, types.Master))
 	o.publicV1.GET("/orders/:id", o.userV1.Introspect(o.OrderGetHandler, types.Electrician))
-	o.publicV1.POST("/orders/:id/signsupervisor", o.userV1.Introspect(o.OrderSignSuperviserPostHandler, types.Electrician))
+	o.publicV1.POST("/orders/:id/signsupervisor", o.userV1.Introspect(o.OrderSignSuperviserPostHandler, types.Master))
 	o.publicV1.POST("/orders/:id/signstaff", o.userV1.Introspect(o.OrderSignStaffPostHandler, types.Electrician))
 	o.publicV1.GET("/orders/user/:id", o.userV1.Introspect(o.OrdersGetByUserIDHandler, types.Electrician))
 	o.publicV1.PUT("/orders/:id", o.userV1.Introspect(o.OrderPutHandler, types.Master))

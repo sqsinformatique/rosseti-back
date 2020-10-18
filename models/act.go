@@ -11,7 +11,7 @@ type Act struct {
 	SuperviserID     int            `json:"superviser_id" db:"superviser_id"`
 	SuperviserDesc   *Profile       `json:"superviser_desc,omitempty"`
 	ObjectID         int            `json:"object_id" db:"object_id"`
-	ObjectDecs       *Object        `json:"object_desc,omitempty"`
+	ObjectDesc       *Object        `json:"object_desc,omitempty"`
 	ReviewID         int            `json:"review_id" db:"review_id"`
 	ReviewDesc       *Review        `json:"review_desc,omitempty"`
 	EndAt            types.NullTime `json:"end_at" db:"end_at"`
